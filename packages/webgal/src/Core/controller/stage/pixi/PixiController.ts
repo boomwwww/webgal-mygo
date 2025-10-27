@@ -2,7 +2,7 @@ import { webgalStore } from '@/store/store';
 import { IEffect, IFigureAssociatedAnimation, IFigureMetadata, ITransform } from '@/store/stageInterface';
 import { setStage, stageActions } from '@/store/stageReducer';
 import { Live2D, WebGAL } from '@/Core/WebGAL';
-import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam, PositioningType } from '@/Core/live2DCore';
+import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/live2DCore';
 import { isIOS } from '@/Core/initializeScript';
 import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiContainer';
 import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi/spine';
@@ -59,6 +59,23 @@ export interface ILive2DRecord {
 //   target: string;
 //   duration: number;
 // }
+
+interface SetContainerInitialPositionOptions {
+  container: WebGALPixiContainer;
+  childContainer: any;
+  originalWidth: number;
+  originalHeight: number;
+  position: 'center' | 'left' | 'right' | 'bg';
+  isLive2DFigure: boolean;
+  overrideBounds?: [number, number, number, number];
+  transform?: {
+    xOffset?: number;
+    yOffset?: number;
+    xScale?: number;
+    yScale?: number;
+  };
+  isJsonlFigure?: boolean;
+}
 
 // @ts-ignore
 window.PIXI = PIXI;
@@ -420,7 +437,14 @@ export default class PixiStage {
            * 重设大小
            */
           const bgSprite = new PIXI.Sprite(texture);
-          this.setContainerInitialPosition(thisBgContainer, bgSprite, texture.width, texture.height, 'bg', false);
+          this.setContainerInitialPosition({
+            container: thisBgContainer,
+            childContainer: bgSprite,
+            originalWidth: texture.width,
+            originalHeight: texture.height,
+            position: 'bg',
+            isLive2DFigure: false,
+          });
         }
       }, 0);
     };
@@ -491,14 +515,14 @@ export default class PixiStage {
            */
           texture.baseTexture.resource.load().then(() => {
             const bgSprite = new PIXI.Sprite(texture);
-            this.setContainerInitialPosition(
-              thisBgContainer,
-              bgSprite,
-              videoResource.source.videoWidth,
-              videoResource.source.videoHeight,
-              'bg',
-              false,
-            );
+            this.setContainerInitialPosition({
+              container: thisBgContainer,
+              childContainer: bgSprite,
+              originalWidth: videoResource.source.videoWidth,
+              originalHeight: videoResource.source.videoHeight,
+              position: 'bg',
+              isLive2DFigure: false,
+            });
           });
         }
       }, 0);
@@ -564,14 +588,14 @@ export default class PixiStage {
            * 重设大小
            */
           const figureSprite = new PIXI.Sprite(texture);
-          this.setContainerInitialPosition(
-            thisFigureContainer,
-            figureSprite,
-            texture.width,
-            texture.height,
-            presetPosition,
-            false,
-          );
+          this.setContainerInitialPosition({
+            container: thisFigureContainer,
+            childContainer: figureSprite,
+            originalWidth: texture.width,
+            originalHeight: texture.height,
+            position: presetPosition,
+            isLive2DFigure: false,
+          });
         }
       }, 0);
     };
@@ -625,7 +649,14 @@ export default class PixiStage {
       // ✅ 使用 AnimatedGIF.fromBuffer 异步解码
       const gif = await AnimatedGIF.fromBuffer(buffer);
 
-      this.setContainerInitialPosition(thisFigureContainer, gif, gif.width, gif.height, presetPosition, false);
+      this.setContainerInitialPosition({
+        container: thisFigureContainer,
+        childContainer: gif,
+        originalWidth: gif.width,
+        originalHeight: gif.height,
+        position: presetPosition,
+        isLive2DFigure: false,
+      });
 
       // ✅ 播放动画 + 添加到容器
       gif.play();
@@ -728,20 +759,17 @@ export default class PixiStage {
           if (!model) continue;
           // 暂时隐藏模型，等全部模型加载后再统一显示
           model.visible = false;
-          this.setContainerInitialPosition(
-            container,
-            model,
-            model.width,
-            model.height,
-            presetPosition,
-            true,
-            undefined, // 聚合模型暂时想不到怎么使用 overrideBounds
-            x,
-            y,
-            xscale,
-            yscale,
-            true,
-          );
+          this.setContainerInitialPosition({
+            container: container,
+            childContainer: model,
+            originalWidth: model.width,
+            originalHeight: model.height,
+            position: presetPosition,
+            isLive2DFigure: true,
+            // overrideBounds: [0, 0, 0, 0]    // 聚合模型暂时想不到怎么使用 overrideBounds
+            transform: { xOffset: x, yOffset: y, xScale: xscale, yScale: yscale },
+            isJsonlFigure: true,
+          });
           models.push(model);
 
           // 每个模型加载完立刻设置 PARAM_IMPORT
@@ -826,14 +854,14 @@ export default class PixiStage {
 
       // 加载后获取原始宽高
       video.onloadedmetadata = () => {
-        this.setContainerInitialPosition(
-          thisFigureContainer,
-          sprite,
-          video.videoWidth,
-          video.videoHeight,
-          presetPosition,
-          false,
-        );
+        this.setContainerInitialPosition({
+          container: thisFigureContainer,
+          childContainer: sprite,
+          originalWidth: video.videoWidth,
+          originalHeight: video.videoHeight,
+          position: presetPosition,
+          isLive2DFigure: false,
+        });
       };
 
       // 错误处理
@@ -911,15 +939,15 @@ export default class PixiStage {
             ]);
 
             models.forEach((model) => {
-              stage.setContainerInitialPosition(
-                thisFigureContainer,
-                model,
-                model.width,
-                model.height,
-                pos,
-                true,
-                overrideBounds,
-              );
+              stage.setContainerInitialPosition({
+                container: thisFigureContainer,
+                childContainer: model,
+                originalWidth: model.width,
+                originalHeight: model.height,
+                position: pos,
+                isLive2DFigure: true,
+                overrideBounds: overrideBounds,
+              });
 
               let animation_index = 0;
               let priority_number = 3;
@@ -1312,30 +1340,33 @@ export default class PixiStage {
   /**
    * 设置容器的初始定位
    */
-  // eslint-disable-next-line max-params
-  private setContainerInitialPosition(
-    container: WebGALPixiContainer,
-    childContainer: any,
-    originalWidth: number,
-    originalHeight: number,
-    position: 'center' | 'left' | 'right' | 'bg',
-    isLive2DFigure: boolean,
-    overrideBounds: [number, number, number, number] = [0, 0, 0, 0],
-    xOffset = 0,
-    yOffset = 0,
-    xScale = 1,
-    yScale = 1,
-    isJsonlFigure = false,
-  ) {
+  private setContainerInitialPosition(options: SetContainerInitialPositionOptions) {
+    const {
+      container,
+      childContainer,
+      originalWidth,
+      originalHeight,
+      position,
+      isLive2DFigure,
+      overrideBounds = [0, 0, 0, 0],
+      transform: { xOffset = 0, yOffset = 0, xScale = 1, yScale = 1 } = {
+        xOffset: 0,
+        yOffset: 0,
+        xScale: 1,
+        yScale: 1,
+      },
+      isJsonlFigure,
+    } = options;
+
     try {
       let positioningType = Live2D.positioningType;
-      // 非 Live2D 立绘一律使用 4.5.13 定位
+      // 非 Live2D 立绘一律使用 4.5.13 定位 ('M_2_4')
       if (!isLive2DFigure) {
-        positioningType = PositioningType.W_4_5_13;
+        positioningType = 'M_2_4';
       }
       // JSONL 立绘在 MyGO 3.0.0 仍然使用 4.5.13 定位
-      if (isJsonlFigure && positioningType === PositioningType.BC_1_0_0) {
-        positioningType = PositioningType.W_4_5_13;
+      if (isJsonlFigure && positioningType === 'M_3_0_0') {
+        positioningType = 'M_2_4';
       }
 
       const scaleX = this.stageWidth / originalWidth;
@@ -1347,11 +1378,11 @@ export default class PixiStage {
       } else {
         targetScale = Math.min(scaleX, scaleY);
         switch (positioningType) {
-          case PositioningType.W_4_5_12:
+          case 'M_2_3':
             targetScale *= 1.5;
             break;
-          case PositioningType.BC_1_0_0:
-          case PositioningType.M_3_1_0:
+          case 'M_3_0_0':
+          case 'M_3_1_0':
             targetScale *= 1.25;
             break;
         }
@@ -1363,11 +1394,11 @@ export default class PixiStage {
       childContainer.pivot.y += (overrideBounds[1] + overrideBounds[3]) * 0.5;
 
       switch (positioningType) {
-        case PositioningType.W_4_5_12:
+        case 'M_2_3':
           childContainer.position.y = this.stageHeight / 1.2 + yOffset;
           break;
-        case PositioningType.BC_1_0_0:
-        case PositioningType.M_3_1_0:
+        case 'M_3_0_0':
+        case 'M_3_1_0':
           childContainer.position.y = this.stageHeight / 1.8 + yOffset;
           break;
         default:
@@ -1383,7 +1414,7 @@ export default class PixiStage {
         const targetWidth = originalWidth * targetScale;
         const targetHeight = originalHeight * targetScale;
         // 立绘尽量贴底
-        if (targetHeight < this.stageHeight && !(positioningType === PositioningType.W_4_5_12)) {
+        if (targetHeight < this.stageHeight && !(positioningType === 'M_2_3')) {
           container.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
         } else {
           container.setBaseY(this.stageHeight / 2);
@@ -1394,8 +1425,8 @@ export default class PixiStage {
         }
         if (position === 'left') {
           switch (positioningType) {
-            case PositioningType.BC_1_0_0:
-            case PositioningType.M_3_1_0:
+            case 'M_3_0_0':
+            case 'M_3_1_0':
               container.setBaseX(850);
               break;
             default:
@@ -1405,8 +1436,8 @@ export default class PixiStage {
         }
         if (position === 'right') {
           switch (positioningType) {
-            case PositioningType.BC_1_0_0:
-            case PositioningType.M_3_1_0:
+            case 'M_3_0_0':
+            case 'M_3_1_0':
               container.setBaseX(1710);
               break;
             default:

@@ -8,7 +8,6 @@ import { initKey } from '@/Core/controller/storage/fastSaveLoad';
 import { getFastSaveFromStorage, getSavesFromStorage } from '@/Core/controller/storage/savesController';
 import { logger } from '@/Core/util/logger';
 import axios from 'axios';
-import { PositioningType } from '@/Core/live2DCore';
 
 /**
  * 获取游戏信息
@@ -62,17 +61,23 @@ export const infoFetcher = (url: string) => {
           if (command === 'Positioning_Type') {
             switch (res) {
               case 'W_4_5_12':
-                Live2D.positioningType = PositioningType.W_4_5_12;
+              case 'M_2_3':
+                Live2D.positioningType = 'M_2_3';
                 break;
               case 'W_4_5_13':
-                Live2D.positioningType = PositioningType.W_4_5_13;
+              case 'M_2_4':
+              case 'M_2_5':
+                Live2D.positioningType = 'M_2_4';
                 break;
               case 'BC_1_0_0':
-                Live2D.positioningType = PositioningType.BC_1_0_0;
+              case 'M_3_0_0':
+                Live2D.positioningType = 'M_3_0_0';
                 break;
               case 'M_3_1_0':
-                Live2D.positioningType = PositioningType.M_3_1_0;
+                Live2D.positioningType = 'M_3_1_0';
                 break;
+              default:
+                Live2D.positioningType = 'M_3_1_0';
             }
           }
         }
