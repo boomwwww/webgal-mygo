@@ -872,6 +872,206 @@ export default class PixiStage {
   }
 
   /**
+   * 添加 wmdl 立绘
+   * @param key 立绘的标识，一般和立绘位置有关
+   * @param url
+   * @param presetPosition
+   */
+  // eslint-disable-next-line max-params
+  public addWmdlFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right') {
+    if (Live2D.isAvailable !== true) return;
+    try {
+      this.figureCash.push(url);
+
+      const loader = this.assetLoader;
+      // 准备用于存放这个立绘的 Container
+      const thisFigureContainer = new WebGALPixiContainer();
+      thisFigureContainer.sortableChildren = true;
+
+      // 是否有相同 key 的立绘
+      const setFigIndex = this.figureObjects.findIndex((e) => e.key === key);
+      const isFigSet = setFigIndex >= 0;
+
+      // 已经有一个这个 key 的立绘存在了
+      if (isFigSet) {
+        this.removeStageObjectByKey(key);
+      }
+
+      const metadata = this.getFigureMetadataByKey(key);
+      if (metadata) {
+        if (metadata.zIndex) {
+          thisFigureContainer.zIndex = metadata.zIndex;
+        }
+      }
+      // 挂载
+      this.figureContainer.addChild(thisFigureContainer);
+      const figureUuid = uuid();
+      this.figureObjects.push({
+        uuid: figureUuid,
+        key: key,
+        pixiContainer: thisFigureContainer,
+        sourceUrl: url,
+        sourceType: 'live2d',
+        sourceExt: 'wmdl',
+      });
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const instance = this;
+
+      const setup = (stage: PixiStage) => {
+        if (thisFigureContainer && this.getStageObjByUuid(figureUuid)) {
+          (async function () {
+            const response = await fetch(url);
+            const dataText = await response.text();
+            const wmdlConfig: {
+              modelRelativePath?: string;
+              subModels?: Array<{
+                modelRelativePath?: string;
+                offsetX?: number;
+                offsetY?: number;
+              }>;
+            } = JSON.parse(dataText);
+
+            // live2dBounds
+            let overrideBounds: [number, number, number, number] = [0, 0, 0, 0];
+            const mot = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+            if (mot?.overrideBounds) {
+              overrideBounds = mot.overrideBounds;
+            }
+            console.log(overrideBounds);
+
+            let animation_index = 0;
+            let priority_number = 3;
+
+            // motion
+            let motionToSet = '';
+            const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+            if (motionFromState) {
+              motionToSet = motionFromState.motion;
+            }
+            instance.updateL2dMotionByKey(key, motionToSet);
+
+            // expression
+            let expressionToSet = '';
+            const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+            if (expressionFromState) {
+              expressionToSet = expressionFromState.expression;
+            }
+            instance.updateL2dExpressionByKey(key, expressionToSet);
+
+            // blink
+            let blinkToSet: BlinkParam = baseBlinkParam;
+            const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
+            if (blinkFromState) {
+              blinkToSet = { ...blinkToSet, ...blinkFromState.blink };
+            }
+            instance.updateL2dBlinkByKey(key, blinkToSet);
+
+            // focus
+            let focusToSet: FocusParam = baseFocusParam;
+            const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
+            if (focusFromState) {
+              focusToSet = { ...focusToSet, ...focusFromState.focus };
+            }
+            instance.updateL2dFocusByKey(key, focusToSet);
+
+            // 整理主模型和子模型信息
+            const modelInfos: Array<{
+              modelRelativePath: string;
+              offsetX: number;
+              offsetY: number;
+            }> = [];
+            if (wmdlConfig.modelRelativePath) {
+              modelInfos.push({
+                modelRelativePath: wmdlConfig.modelRelativePath,
+                offsetX: 0,
+                offsetY: 0,
+              });
+            }
+            if (wmdlConfig.subModels) {
+              wmdlConfig.subModels.forEach((subModel) => {
+                if (subModel.modelRelativePath) {
+                  modelInfos.push({
+                    modelRelativePath: subModel.modelRelativePath,
+                    offsetX: subModel.offsetX ?? 0,
+                    offsetY: subModel.offsetY ?? 0,
+                  });
+                }
+              });
+            }
+
+            const models: any[] = [];
+            const wmdlBaseDir = url.substring(0, url.lastIndexOf('/') + 1);
+            for (let i = 0; i < modelInfos.length; i++) {
+              const modelInfo = modelInfos[i];
+              const model = await Live2D.Live2DModel.from(wmdlBaseDir + modelInfo.modelRelativePath, {
+                autoInteract: false,
+                overrideBounds: {
+                  x0: overrideBounds[0],
+                  y0: overrideBounds[1],
+                  x1: overrideBounds[2],
+                  y1: overrideBounds[3],
+                },
+              });
+              model.zIndex = i;
+              stage.setContainerInitialPosition({
+                container: thisFigureContainer,
+                childContainer: model,
+                originalWidth: model.width,
+                originalHeight: model.height,
+                position: presetPosition,
+                isLive2DFigure: true,
+                overrideBounds: overrideBounds,
+                transform: {
+                  xOffset: modelInfo.offsetX,
+                  yOffset: modelInfo.offsetY,
+                },
+              });
+
+              // 监听模型更新事件，确保口型参数不被motion覆盖
+              // @ts-ignore
+              model.internalModel.on('beforeModelUpdate', () => {
+                // 获取当前的口型值并重新应用
+                const currentMouthValue = instance.getCurrentMouthValue(key);
+                if (currentMouthValue !== null) {
+                  instance.setModelMouthY(key, currentMouthValue);
+                }
+              });
+
+              model.visible = false; // 先隐藏，等全部模型加载完再显示
+              models.push(model);
+            }
+            // 全部模型加载完毕，显示它们
+            models.forEach((model) => {
+              model.visible = true;
+              model.motion(motionToSet, animation_index, priority_number);
+              model.expression(expressionToSet);
+              model.internalModel?.setBlinkParam(blinkToSet);
+              model.internalModel?.focusController?.focus(focusToSet.x, focusToSet.y, focusToSet.instant);
+            });
+            // lip-sync is still a problem and you can not.
+            Live2D.SoundManager.volume = 0; // @ts-ignore
+          })();
+        }
+      };
+
+      /**
+       * 加载器部分
+       */
+      const resourses = Object.keys(loader.resources);
+      this.cacheGC();
+      if (!resourses.includes(url)) {
+        this.loadAsset(url, () => setup(this));
+      } else {
+        // 复用
+        setup(this);
+      }
+    } catch (error) {
+      console.error('Live2d Module err: ' + error);
+      Live2D.isAvailable = false;
+    }
+  }
+
+  /**
    * Live2d立绘，如果要使用 Live2D，取消这里的注释
    * @param jsonPath
    */

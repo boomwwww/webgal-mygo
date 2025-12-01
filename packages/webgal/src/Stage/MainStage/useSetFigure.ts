@@ -259,6 +259,8 @@ function addFigure(type?: 'image' | 'live2D' | 'spine' | 'video', ...args: any[]
     return addGifFigure(...args); // ✅ GIF 动态图
   } else if (url.endsWith('.webm') || url.endsWith('.mov') || _type === 'video') {
     return addVideoFigure(...args); // ✅ webm/mov 动态视频
+  } else if (url.endsWith('.wmdl')) {
+    return addWmdlFigure(...args); // ✅ wmdl 3D模型
   } else if (url.endsWith('.skel') || _type === 'spine') {
     // @ts-ignore
     return WebGAL.gameplay.pixiStage?.addSpineFigure(...args);
@@ -290,4 +292,9 @@ function addGifFigure(...args: any[]) {
 function addVideoFigure(...args: any[]) {
   // @ts-ignore
   return WebGAL.gameplay.pixiStage?.addVideoFigure(...args);
+}
+// wmdl模型
+function addWmdlFigure(...args: any[]) {
+  // @ts-ignore
+  return WebGAL.gameplay.pixiStage?.addWmdlFigure(...args);
 }
