@@ -749,13 +749,22 @@ export default class PixiStage {
       const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
       const motionToSet = motionFromState?.motion ?? '';
       const expressionToSet = expressionFromState?.expression ?? '';
+      let overrideBounds: [number, number, number, number] = motionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
 
       for (const modelConfig of modelConfigs) {
         const { path: modelPath, x, y, xscale, yscale } = modelConfig;
         try {
-          const model = await Live2D.Live2DModel.from(modelPath, { autoInteract: false });
+          const model = await Live2D.Live2DModel.from(modelPath, {
+            autoInteract: false,
+            overWriteBounds: {
+              x0: overrideBounds[0],
+              y0: overrideBounds[1],
+              x1: overrideBounds[2],
+              y1: overrideBounds[3],
+            },
+          });
           if (!model) continue;
           // 暂时隐藏模型，等全部模型加载后再统一显示
           model.visible = false;
@@ -766,7 +775,7 @@ export default class PixiStage {
             originalHeight: model.height,
             position: presetPosition,
             isLive2DFigure: true,
-            // overrideBounds: [0, 0, 0, 0]    // 聚合模型暂时想不到怎么使用 overrideBounds
+            overrideBounds: overrideBounds,
             transform: { xOffset: x, yOffset: y, xScale: xscale, yScale: yscale },
             isJsonlFigure: true,
           });
@@ -1005,7 +1014,7 @@ export default class PixiStage {
               const modelInfo = modelInfos[i];
               const model = await Live2D.Live2DModel.from(wmdlBaseDir + modelInfo.modelRelativePath, {
                 autoInteract: false,
-                overrideBounds: {
+                overWriteBounds: {
                   x0: overrideBounds[0],
                   y0: overrideBounds[1],
                   x1: overrideBounds[2],
