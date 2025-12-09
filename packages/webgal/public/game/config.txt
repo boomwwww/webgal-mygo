@@ -8,3 +8,5 @@ Show_panic:true;
 Enable_Appreciation:true;
 Legacy_Expression_Blend_Mode:true;
 Positioning_Type:M_3_1_0;
+Stage_Width:2560;
+Stage_Height:1440;

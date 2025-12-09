@@ -18,6 +18,11 @@
   letter-spacing: normal;
   transition: left 0.33s;
   transform: scale(0.9);
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: stretch;
+  max-width: 2320px;
+  justify-self: center;
 
   &[data-auto='true'] {
     &::after {
@@ -144,7 +149,7 @@
     position: absolute;
     bottom: -3px;
     right: -6px;
-    background-image: url('/game/template/assets/textbox-meteor.svg');
+    background-image: url('game/template/assets/textbox-meteor.svg');
     background-position: right bottom;
     background-repeat: no-repeat;
     background-size: 105px;

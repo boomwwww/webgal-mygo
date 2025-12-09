@@ -7,9 +7,21 @@
     <link rel="manifest" href="/manifest.json" />
     <title>WebGAL</title>
     <style>
-      .html-body__effect-background {
-        height: 100vh;
+      html {
+        overflow: hidden;
+        position: absolute;
         width: 100vw;
+        height: 100vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transform-origin: center center;
+        transition: transform 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+      }
+
+      .html-body__effect-background {
+        height: 100%;
+        width: 100%;
         filter: blur(50px);
         background-position: center;
         background-repeat: no-repeat;
@@ -20,8 +32,8 @@
       }
 
       .html-body__title-enter {
-        width: 2560px;
-        height: 1440px;
+        width: 100%;
+        height: 100%;
         overflow: hidden;
         position: absolute;
         top: 0;
@@ -61,7 +73,7 @@
         top: 0;
         height: 100%;
         opacity: 1;
-        font-size: 175%;
+        font-size: 2vmin;
         transition: opacity 1s;
         z-index: 15;
         font-family: '思源宋体', Georgia, serif;
@@ -72,6 +84,18 @@
         height: 100%;
         display: flex;
         justify-content: center;
+        align-items: center;
+      }
+
+      .title-enter-container__loading-text {
+        position: absolute;
+        bottom: 5em;
+        color: #999;
+        font-size: 120%;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        flex-flow: column;
         align-items: center;
       }
 
@@ -111,6 +135,14 @@
       .title-enter-container__link-to-github > div {
         padding: 0 0 0.25em 0;
       }
+
+      @media (max-aspect-ratio: 1/1) {
+        html {
+          width: 100vh;
+          height: 100vw;
+          transform: translate(-50%, -50%) rotate(90deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -124,6 +156,7 @@
         <div class="title-enter-container__center-text">
           <div>PRESS THE SCREEN TO START</div>
         </div>
+        <div id="title-enter__loading-text" class="title-enter-container__loading-text"></div>
         <div class="title-enter-container__link-to-github">
           <div>Powered by <a> WebGAL </a> Framework</div>
         </div>
@@ -137,72 +170,6 @@
     <script>
       (() => {
         const isIOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-        const resize = () => {
-          const targetHeight = 1440; // 目标高度
-          const targetWidth = 2560; // 目标宽度
-
-          const h = window.innerHeight; // 窗口高度
-          const w = window.innerWidth; // 窗口宽度
-          const zoomH = h / targetHeight; // 以窗口高度为基准的变换比
-          const zoomW = w / targetWidth; // 以窗口宽度为基准的变换比
-          const zoomH2 = w / targetHeight; // 竖屏时以窗口高度为基础的变换比
-          const zoomW2 = h / targetWidth; // 竖屏时以窗口宽度为基础的变换比
-          let mh = (targetHeight - h) / 2; // y轴移动距离
-          let mw = (targetWidth - w) / 2; // x轴移动距离
-          let mh2os = targetWidth / 2 - w / 2; // 竖屏时 y轴移动距离
-          let mw2os = targetHeight / 2 - h / 2; // 竖屏时 x轴移动距离
-          let transform = '';
-          let effectBackgroundTransform = '';
-          const root = document.querySelector('#root'); // 获取根元素
-          const titleEnter = document.querySelector('.html-body__title-enter');
-          const effectBackground = document.querySelector('.html-body__effect-background');
-          const elements = [root, titleEnter];
-          if (w > h) {
-            if (effectBackground) {
-              effectBackground.style.height = `100vh`;
-              effectBackground.style.width = `100vw`;
-              effectBackgroundTransform = '';
-            }
-            mw = -mw;
-            mh = -mh;
-            if (w * (9 / 16) >= h) {
-              transform = `translate(${mw}px, ${mh}px) ` + `scale(${zoomH}, ${zoomH}) `;
-            }
-            if (w * (9 / 16) < h) {
-              transform = `translate(${mw}px, ${mh}px) ` + `scale(${zoomW}, ${zoomW}) `;
-            }
-          } else {
-            // 旋转
-            if (effectBackground) {
-              effectBackground.style.height = `${targetHeight}px `;
-              effectBackground.style.width = `${targetWidth}px `;
-            }
-            mw2os = -mw2os;
-            if (h * (9 / 16) >= w) {
-              effectBackgroundTransform =
-                `rotate(90deg) ` + `translate(${mw2os}px, ${mh2os}px) ` + `scale(${zoomH2 * 1.75}, ${zoomH2 * 1.75}) `;
-              transform = `rotate(90deg) ` + `translate(${mw2os}px, ${mh2os}px) ` + `scale(${zoomH2},${zoomH2}) `;
-            }
-            if (h * (9 / 16) < w) {
-              effectBackgroundTransform =
-                `rotate(90deg) ` + ` translate(${mw2os}px, ${mh2os}px) ` + `scale(${zoomW2 * 1.75}, ${zoomW2 * 1.75}) `;
-              transform = `rotate(90deg) ` + `translate(${mw2os}px, ${mh2os}px) ` + `scale(${zoomW2},${zoomW2}) `;
-            }
-            // iOS 不强制旋转
-            if (isIOS) {
-              const zoomWi = w / targetWidth;
-              transform = `translate(${-mw}px, ${-mh}px) ` + `scale(${zoomWi},${zoomWi}) `;
-            }
-          }
-          if (effectBackground) {
-            effectBackground.style.transform = effectBackgroundTransform;
-          }
-          for (const element of elements) {
-            if (element) {
-              element.style.transform = transform;
-            }
-          }
-        };
         if (!isIOS) {
           // 非 IOS
           // 创建一个新的 meta 标签
@@ -211,17 +178,6 @@
           metaTag.content = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no';
           // 将该标签添加到 head 中
           document.head.appendChild(metaTag);
-          resize();
-          window.onload = resize;
-          window.onresize = resize;
-          // 监听键盘 F11 键按下事件，全屏时触发页面调整
-          document.onkeydown = (e) => {
-            if (e && e.key === 'F11') {
-              setTimeout(() => {
-                resize();
-              }, 100);
-            }
-          };
         } else {
           // IOS
           const metaTag = document.createElement('meta');

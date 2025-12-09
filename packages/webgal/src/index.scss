@@ -64,6 +64,7 @@ code {
 }
 
 #root {
+  position: absolute;
   width: $screenWidth;
   height: $screenHeight;
   overflow: hidden;
@@ -92,6 +93,8 @@ code {
 }
 
 .App {
+  position: absolute;
+  transform-origin: left top;
   height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 1);

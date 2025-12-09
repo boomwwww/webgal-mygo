@@ -17,4 +17,6 @@ export class WebgalCore {
   public events = new Events();
   public steam = new SteamIntegration();
   public template: WebgalTemplate | null = null;
+  public stageWidth = 2560;
+  public stageHeight = 1440;
 }

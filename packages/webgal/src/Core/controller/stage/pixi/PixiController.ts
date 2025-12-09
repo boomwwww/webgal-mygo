@@ -6,7 +6,6 @@ import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/l
 import { isIOS } from '@/Core/initializeScript';
 import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiContainer';
 import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi/spine';
-import { SCREEN_CONSTANTS } from '@/Core/util/constants';
 import { logger } from '@/Core/util/logger';
 import { v4 as uuid } from 'uuid';
 import { cloneDeep, isEqual } from 'lodash';
@@ -107,8 +106,8 @@ export default class PixiStage {
   public notUpdateBacklogEffects = false;
   public readonly figureContainer: PIXI.Container;
   public figureObjects: Array<IStageObject> = [];
-  public stageWidth = SCREEN_CONSTANTS.width;
-  public stageHeight = SCREEN_CONSTANTS.height;
+  public stageWidth = WebGAL.stageWidth;
+  public stageHeight = WebGAL.stageHeight;
   public assetLoader = new PIXI.Loader();
   public readonly backgroundContainer: PIXI.Container;
   public backgroundObjects: Array<IStageObject> = [];
@@ -159,10 +158,7 @@ export default class PixiStage {
     app.renderer.view.id = 'pixiCanvas';
     // @ts-ignore
     app.renderer.autoResize = true;
-    const appRoot = document.getElementById('root');
-    if (appRoot) {
-      app.renderer.resize(appRoot.clientWidth, appRoot.clientHeight);
-    }
+    app.renderer.resize(this.stageWidth, this.stageHeight);
     if (isIOS) {
       app.renderer.view.style.zIndex = '-5';
     }
@@ -1639,7 +1635,7 @@ export default class PixiStage {
           switch (positioningType) {
             case 'M_3_0_0':
             case 'M_3_1_0':
-              container.setBaseX(850);
+              container.setBaseX(this.stageWidth / 2 - 430);
               break;
             default:
               container.setBaseX(targetWidth / 2);
@@ -1650,7 +1646,7 @@ export default class PixiStage {
           switch (positioningType) {
             case 'M_3_0_0':
             case 'M_3_1_0':
-              container.setBaseX(1710);
+              container.setBaseX(this.stageWidth / 2 + 430);
               break;
             default:
               container.setBaseX(this.stageWidth - targetWidth / 2);
