@@ -37,7 +37,7 @@
       & > .icon {
         position: relative;
         left: -32px;
-        top: 12px;
+        top: 6px;
         color: #444;
         font-size: 80px;
       }
@@ -72,7 +72,7 @@
         & > .icon {
           position: relative;
           left: 16px;
-          top: 12px;
+          top: 6px;
           width: 120px;
           height: 120px;
           color: #444;
@@ -94,9 +94,8 @@
 }
 
 .fastSlPreview {
-  position: absolute;
-  top: -100px;
-  right: 0;
+  position: fixed;
+  top: 300px;
   background: linear-gradient(315deg, rgba(253, 251, 251, 0.9) 0%, rgba(235, 237, 238, 0.85) 100%);
   width: 900px;
   height: 230px;
@@ -109,10 +108,12 @@
 
 .fastSave:hover .fastSPreview {
   display: block;
+  right: 320px;
 }
 
 .fastLoad:hover .fastLPreview {
   display: block;
+  right: 280px;
 }
 
 @keyframes fastSlEnter {

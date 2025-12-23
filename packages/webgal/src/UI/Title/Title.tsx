@@ -171,7 +171,7 @@ export default function Title() {
       )}
       {GUIState.showTitle && (
         <div className={styles.Title_version_info}>
-          <div>WebGAL MyGO Engine V{config.version}</div>
+          <div>WebGAL MyGO Engine v{config.version}</div>
           <div>( Based on WebGAL v{__INFO.version} )</div>
         </div>
       )}

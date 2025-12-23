@@ -28,8 +28,8 @@ import {
   Save,
   SettingTwo,
   Unlock,
-  ArrowLeft,
-  ArrowRight,
+  LeftTwo,
+  RightTwo,
 } from '@icon-park/react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -105,7 +105,7 @@ export function BangBottomControlPanel() {
           }}
         >
           <div className={styles.icon}>
-            <ArrowLeft />
+            <LeftTwo theme="filled" size={64} />
           </div>
           <div className={styles.text}>菜单</div>
         </div>
@@ -117,12 +117,12 @@ export function BangBottomControlPanel() {
             }}
           >
             <div className={styles.icon}>
-              <ArrowRight />
+              <RightTwo theme="filled" size={64} />
             </div>
             <div className={styles.text}>菜单</div>
           </span>
           <PanelButton
-            Icon={Home}
+            icon={<Home />}
             text={t('buttons.title')}
             onClick={() => {
               playSeDialogOpen();
@@ -138,7 +138,7 @@ export function BangBottomControlPanel() {
             }}
           />
           <PanelButton
-            Icon={SettingTwo}
+            icon={<SettingTwo />}
             text={t('buttons.options')}
             onClick={() => {
               setMenuPanel(MenuPanelTag.Option);
@@ -146,7 +146,7 @@ export function BangBottomControlPanel() {
             }}
           />
           <PanelButton
-            Icon={PlayOne}
+            icon={<PlayOne />}
             text={t('buttons.auto')}
             onClick={() => {
               switchAuto();
@@ -155,13 +155,13 @@ export function BangBottomControlPanel() {
           />
           {isFullscreenSupport && (
             <PanelButton
-              Icon={isFullScreen ? OffScreen : FullScreen}
+              icon={isFullScreen ? <OffScreen /> : <FullScreen />}
               text={t('buttons.fullscreen')}
               onClick={toggleFullscreen}
             />
           )}
           <PanelButton
-            Icon={DoubleRight}
+            icon={<DoubleRight />}
             text={t('buttons.forward')}
             onClick={() => {
               switchFast();
@@ -169,7 +169,7 @@ export function BangBottomControlPanel() {
             isActive={WebGAL.gameplay.isFast}
           />
           <PanelButton
-            Icon={ReplayMusic}
+            icon={<ReplayMusic />}
             text={t('buttons.replay')}
             onClick={() => {
               let VocalControl: any = document.getElementById('currentVocal');
@@ -181,7 +181,7 @@ export function BangBottomControlPanel() {
             }}
           />
           <PanelButton
-            Icon={AlignTextLeftOne}
+            icon={<AlignTextLeftOne />}
             text={t('buttons.backlog')}
             onClick={() => {
               setComponentVisibility('showBacklog', true);
@@ -189,7 +189,7 @@ export function BangBottomControlPanel() {
             }}
           />
           <PanelButton
-            Icon={DoubleDown}
+            icon={<DoubleDown />}
             text={t('buttons.quicklySave')}
             onClick={() => {
               saveGame(0);
@@ -200,7 +200,7 @@ export function BangBottomControlPanel() {
             <div className={styles.fastSlPreview + ' ' + styles.fastSPreview}>{fastSlPreview}</div>
           </PanelButton>
           <PanelButton
-            Icon={DoubleUp}
+            icon={<DoubleUp />}
             text={t('buttons.quicklyLoad')}
             onClick={() => {
               loadGame(0);
@@ -208,11 +208,10 @@ export function BangBottomControlPanel() {
             small={true}
             className={styles.fastLoad}
           >
-            {' '}
             <div className={styles.fastSlPreview + ' ' + styles.fastLPreview}>{fastSlPreview}</div>
           </PanelButton>
           <PanelButton
-            Icon={Save}
+            icon={<Save />}
             text={t('buttons.save')}
             onClick={() => {
               setMenuPanel(MenuPanelTag.Save);
@@ -221,7 +220,7 @@ export function BangBottomControlPanel() {
             small={true}
           />
           <PanelButton
-            Icon={FolderOpen}
+            icon={<FolderOpen />}
             text={t('buttons.load')}
             onClick={() => {
               setMenuPanel(MenuPanelTag.Load);
@@ -231,7 +230,7 @@ export function BangBottomControlPanel() {
           />
           {GUIStore.showTextBox && (
             <PanelButton
-              Icon={PreviewCloseOne}
+              icon={<PreviewCloseOne />}
               text={t('buttons.hide')}
               onClick={() => {
                 setComponentVisibility('showTextBox', false);
@@ -241,14 +240,19 @@ export function BangBottomControlPanel() {
           )}{' '}
           {!GUIStore.showTextBox && (
             <PanelButton
-              Icon={PreviewOpen}
+              icon={<PreviewOpen />}
               text={t('buttons.show')}
               onClick={() => {
                 setComponentVisibility('showTextBox', true);
               }}
             />
           )}
-          <PanelButton Icon={GUIStore.showControls ? Lock : Unlock} text="" onClick={switchControls} small={true} />
+          <PanelButton
+            icon={GUIStore.showControls ? <Lock /> : <Unlock />}
+            text=""
+            onClick={switchControls}
+            small={true}
+          />
         </div>
       </div>
       <div className={styles.version}>
@@ -262,7 +266,7 @@ export function BangBottomControlPanel() {
 function PanelButton(props: {
   className?: string;
   children?: ReactNode;
-  Icon: FC;
+  icon: ReactNode;
   text: string;
   onClick: () => void;
   onMouseEnter?: () => void;
@@ -285,9 +289,7 @@ function PanelButton(props: {
         props.onMouseEnter?.();
       }}
     >
-      <div style={{ marginTop: '15px', fontSize: '40px', color: props.isActive ? 'red' : '#444' }}>
-        <props.Icon />
-      </div>
+      <div style={{ marginTop: '15px', fontSize: '40px', color: props.isActive ? 'red' : '#444' }}>{props.icon}</div>
       <div
         style={{
           position: 'relative',

@@ -25,15 +25,25 @@
   justify-self: center;
 
   &[data-auto='true'] {
+    &::before,
     &::after {
-      position: relative;
-      left: 1920px;
-      bottom: 172px;
-      font-size: 50px;
-      text-shadow: 8px 8px 16px white, 8px -8px 16px white, -8px -8px 16px white, -8px 8px 16px white;
+      content: '▶ AUTO';
+      position: absolute;
+      right: 120px;
+      bottom: 275px;
+      font-size: 48px;
       color: #ff3b72;
-      content: '▶AUTO';
-      animation: auto-blink 1.2s infinite;
+      animation: auto-blink 1s infinite;
+    }
+
+    &::before {
+      -webkit-text-stroke: 14px #ffffff;
+      z-index: -2;
+    }
+
+    &::after {
+      -webkit-text-stroke: 1px #ff3b72;
+      z-index: -1;
     }
   }
 }
