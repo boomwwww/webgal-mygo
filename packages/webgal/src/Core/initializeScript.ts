@@ -15,6 +15,7 @@ import axios from 'axios';
 import { __INFO } from '@/config/info';
 import { WebGAL } from '@/Core/WebGAL';
 import { loadTemplate } from '@/Core/util/coreInitialFunction/templateLoader';
+import { useIsWaiting } from './controller/gamePlay/isWaiting';
 
 const u = navigator.userAgent;
 export const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
@@ -86,6 +87,7 @@ export const initializeScript = async (): Promise<void> => {
   //     }
   //   });
   // }
+  useIsWaiting(WebGAL);
 
   /**
    * 绑定工具函数

@@ -211,6 +211,9 @@ export default function IMSSTextbox(props: ITextboxProps) {
             style={{
               opacity: `${textboxOpacity / 100}`,
             }}
+            data-waiting={
+              !(WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast) && WebGAL.gameplay.isWaiting ? 'true' : 'false'
+            }
           />
           <div
             id="textBoxMain"

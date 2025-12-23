@@ -86,6 +86,57 @@
     opacity: 0.4;
     transform: rotate(4deg);
   }
+
+  &[data-waiting='true'] {
+    &::before {
+      content: '';
+      width: 2em;
+      height: 2em;
+      display: inline-block;
+      position: absolute;
+      right: 64px;
+      bottom: 30px;
+      background-image: url('game/template/assets/icon-pink.png');
+      background-position: right bottom;
+      background-repeat: no-repeat;
+      transform-origin: 70% 90%;
+      transform: scale(3.2);
+      filter: drop-shadow(0 8px 1px rgba(120, 120, 120, 0.7));
+      animation: waiting-icon 1s infinite;
+      transition: all 0.33s;
+    }
+  }
+}
+
+@keyframes waiting-icon {
+  0% {
+    transform: scaleX(3.2) scaleY(3) translateY(0) rotate(0deg);
+    filter: drop-shadow(0 8px 1px rgba(120, 120, 120, 0.7));
+  }
+  15% {
+    transform: scaleX(3.2) scaleY(3.2) translateY(-2px) rotate(0deg);
+    filter: drop-shadow(0 6px 1px rgba(120, 120, 120, 0.5));
+  }
+  30% {
+    transform: scaleX(3.2) scaleY(3.2) translateY(-4px) rotate(-20deg);
+    filter: drop-shadow(2px 4px 1px rgba(120, 120, 120, 0.4));
+  }
+  50% {
+    transform: scaleX(3.2) scaleY(3.2) translateY(-6px) rotate(20deg);
+    filter: drop-shadow(-2px 2px 1px rgba(120, 120, 120, 0.3));
+  }
+  60% {
+    transform: scaleX(3.2) scaleY(3.2) translateY(-5.5px) rotate(-10deg);
+    filter: drop-shadow(1px 3px 1px rgba(120, 120, 120, 0.35));
+  }
+  70% {
+    transform: scaleX(3.2) scaleY(3.2) translateY(-4px) rotate(0deg);
+    filter: drop-shadow(0 5px 1px rgba(120, 120, 120, 0.45));
+  }
+  100% {
+    transform: scaleX(3.2) scaleY(2.4) translateY(0) rotate(0deg);
+    filter: drop-shadow(0 8px 1px rgba(120, 120, 120, 0.7));
+  }
 }
 
 .TextBox_textElement_start {
