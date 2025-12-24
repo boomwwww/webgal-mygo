@@ -7,6 +7,7 @@ import { css } from '@emotion/css';
 import { textSize } from '@/store/userDataInterface';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import { useValue } from '@/hooks/useValue';
 
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
@@ -194,6 +195,17 @@ export default function IMSSTextbox(props: ITextboxProps) {
   const lineHeightCssStr = `line-height: ${finalTextLineHeight}em`;
   const lhCss = css(lineHeightCssStr);
 
+  const isWaiting = useValue(false);
+  useEffect(() => {
+    const updateIsWaiting = () => {
+      isWaiting.set(!(WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast) && WebGAL.gameplay.isWaiting);
+    };
+    const timer = setInterval(updateIsWaiting, 50);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   return (
     <>
       {isText && (
@@ -211,9 +223,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
             style={{
               opacity: `${textboxOpacity / 100}`,
             }}
-            data-waiting={
-              !(WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast) && WebGAL.gameplay.isWaiting ? 'true' : 'false'
-            }
+            data-waiting={isWaiting.value ? 'true' : 'false'}
           />
           <div
             id="textBoxMain"
