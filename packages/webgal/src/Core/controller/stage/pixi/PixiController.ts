@@ -1603,17 +1603,19 @@ export default class PixiStage {
 
       switch (positioningType) {
         case 'M_2_3':
+          childContainer.position.x = this.stageWidth / 2 + xOffset;
           childContainer.position.y = this.stageHeight / 1.2 + yOffset;
           break;
         case 'M_3_0_0':
         case 'M_3_1_0':
+          childContainer.position.x = xOffset;
           childContainer.position.y = this.stageHeight / 1.8 + yOffset;
           break;
         default:
+          childContainer.position.x = xOffset;
           childContainer.position.y = this.stageHeight / 2 + yOffset;
           break;
       }
-      childContainer.position.x = xOffset;
 
       if (position === 'bg') {
         container.setBaseX(this.stageWidth / 2);
@@ -1622,14 +1624,26 @@ export default class PixiStage {
         const targetWidth = originalWidth * targetScale;
         const targetHeight = originalHeight * targetScale;
         // 立绘尽量贴底
-        if (targetHeight < this.stageHeight && !(positioningType === 'M_2_3')) {
-          container.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
-        } else {
-          container.setBaseY(this.stageHeight / 2);
+        switch (positioningType) {
+          case 'M_2_3':
+            break;
+          default:
+            if (targetHeight < this.stageHeight) {
+              container.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
+            } else {
+              container.setBaseY(this.stageHeight / 2);
+            }
+            break;
         }
         // 立绘左中右
         if (position === 'center') {
-          container.setBaseX(this.stageWidth / 2);
+          switch (positioningType) {
+            case 'M_2_3':
+              break;
+            default:
+              container.setBaseX(this.stageWidth / 2);
+              break;
+          }
         }
         if (position === 'left') {
           switch (positioningType) {
@@ -1655,7 +1669,13 @@ export default class PixiStage {
         }
       }
 
-      container.pivot.set(0, this.stageHeight / 2);
+      switch (positioningType) {
+        case 'M_2_3':
+          break;
+        default:
+          container.pivot.set(0, this.stageHeight / 2);
+          break;
+      }
       container.addChild(childContainer);
     } catch (error) {
       console.error('设置容器初始位置失败:', error);
