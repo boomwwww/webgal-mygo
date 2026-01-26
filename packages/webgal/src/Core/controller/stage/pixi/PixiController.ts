@@ -747,8 +747,12 @@ export default class PixiStage {
 
       const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
       const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+      const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
+      const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
       const motionToSet = motionFromState?.motion ?? '';
       const expressionToSet = expressionFromState?.expression ?? '';
+      const blinkToSet = blinkFromState?.blink ?? baseBlinkParam;
+      const focusToSet = focusFromState?.focus ?? baseFocusParam;
       let overrideBounds: [number, number, number, number] = motionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
@@ -805,12 +809,22 @@ export default class PixiStage {
           // @ts-ignore
           model.expression(expressionToSet);
         }
+        if (blinkToSet) {
+          // @ts-ignore
+          model.internalModel?.setBlinkParam(blinkToSet);
+        }
+        if (focusToSet) {
+          // @ts-ignore
+          model.internalModel?.focusController?.focus(focusToSet.x, focusToSet.y, focusToSet.instant);
+        }
         // 统一显示模型
         model.visible = true;
       }
 
       if (motionToSet) this.updateL2dMotionByKey(key, motionToSet);
       if (expressionToSet) this.updateL2dExpressionByKey(key, expressionToSet);
+      if (blinkToSet) this.updateL2dBlinkByKey(key, blinkToSet);
+      if (focusToSet) this.updateL2dFocusByKey(key, focusToSet);
     } catch (e) {
       console.error('addJsonlFigure 加载失败:', e);
     }
