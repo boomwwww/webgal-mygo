@@ -751,8 +751,8 @@ export default class PixiStage {
       const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
       const motionToSet = motionFromState?.motion ?? '';
       const expressionToSet = expressionFromState?.expression ?? '';
-      const blinkToSet = blinkFromState?.blink ?? baseBlinkParam;
-      const focusToSet = focusFromState?.focus ?? baseFocusParam;
+      const blinkToSet = { ...baseBlinkParam, ...(blinkFromState?.blink ?? {}) };
+      const focusToSet = { ...baseFocusParam, ...(focusFromState?.focus ?? {}) };
       let overrideBounds: [number, number, number, number] = motionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
