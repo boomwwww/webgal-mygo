@@ -19,4 +19,5 @@ export class WebgalCore {
   public template: WebgalTemplate | null = null;
   public stageWidth = 2560;
   public stageHeight = 1440;
+  public autoRotate = true;
 }
