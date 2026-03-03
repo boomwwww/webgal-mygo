@@ -70,6 +70,13 @@ const zhTw = {
                 off: '關閉',
               },
             },
+            enableBangControlPanel: {
+              title: 'BanG Dream 風格選單',
+              options: {
+                on: '開啟',
+                off: '關閉',
+              },
+            },
             textSpeed: {
               title: '文字顯示速度',
               options: {

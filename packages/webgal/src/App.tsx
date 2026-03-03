@@ -3,6 +3,7 @@ import { initializeScript } from '@/Core/initializeScript';
 import Translation from '@/UI/Translation/Translation';
 import { Stage } from '@/Stage/Stage';
 import { BangBottomControlPanel } from './UI/BottomControlPanel/BangBottomControlPanel';
+import { BottomControlPanel } from './UI/BottomControlPanel/BottomControlPanel';
 import { BottomControlPanelFilm } from '@/UI/BottomControlPanel/BottomControlPanelFilm';
 import { Backlog } from '@/UI/Backlog/Backlog';
 import Title from '@/UI/Title/Title';
@@ -68,6 +69,7 @@ export default function App() {
     <div className="App" ref={appRef}>
       <Translation />
       <Stage />
+      <BottomControlPanel />
       <BangBottomControlPanel />
       <BottomControlPanelFilm />
       <Backlog />
