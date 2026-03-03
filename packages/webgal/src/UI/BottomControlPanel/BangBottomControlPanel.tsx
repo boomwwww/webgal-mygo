@@ -58,6 +58,7 @@ export function BangBottomControlPanel() {
   const { isSupported: isFullscreenSupport, isFullScreen, toggle: toggleFullscreen } = useFullScreen();
   const GUIStore = useSelector((state: RootState) => state.GUI);
   const stageState = useSelector((state: RootState) => state.stage);
+  const userData = useSelector((state: RootState) => state.userData);
   const dispatch = useDispatch();
   const setComponentVisibility = (component: keyof componentsVisibility, visibility: boolean) => {
     dispatch(setVisibility({ component, visibility }));
@@ -96,7 +97,7 @@ export function BangBottomControlPanel() {
 
   const isFolded = useValue(true);
 
-  return GUIStore.showTextBox && stageState.enableFilm === '' ? (
+  return GUIStore.showTextBox && userData.optionData.enableBangControlPanel && stageState.enableFilm === '' ? (
     <div
       className={styles.main}
       style={{

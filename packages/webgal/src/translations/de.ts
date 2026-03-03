@@ -63,6 +63,13 @@ const de = {
         display: {
           title: 'Darstellung',
           options: {
+            enableBangControlPanel: {
+              title: 'BanG Dream Stil Menü',
+              options: {
+                on: 'AN',
+                off: 'AUS',
+              },
+            },
             textSpeed: {
               title: 'Geschwindigkeit der Textanzeige',
               options: {

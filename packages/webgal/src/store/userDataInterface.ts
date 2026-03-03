@@ -46,6 +46,7 @@ export interface IOptionData {
   language: language;
   voiceInterruption: voiceOption; // 是否中断语音
   fullScreen: fullScreenOption;
+  enableBangControlPanel: boolean; // 使用 BanGDream 控制面板
 }
 
 /**
