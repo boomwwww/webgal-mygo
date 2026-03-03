@@ -90,6 +90,9 @@ export const infoFetcher = async (url: string) => {
         if (command === 'Stage_Height') {
           WebGAL.stageHeight = Number(res);
         }
+        if (command === 'Auto_Rotate') {
+          WebGAL.autoRotate = res !== false;
+        }
       }
     }
   });

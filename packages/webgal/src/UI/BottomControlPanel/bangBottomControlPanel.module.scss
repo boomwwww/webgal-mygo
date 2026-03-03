@@ -4,6 +4,7 @@
   right: 80px;
 
   transition: width 0.25s;
+  max-width: 90%;
   height: 140px;
 
   z-index: 9;
@@ -18,8 +19,11 @@
   & > .background {
     border-radius: 20px;
 
+    display: flex;
+
     margin: 5px;
     transition: width 0.25s;
+    width: auto;
     height: 120px;
 
     background-color: #ccc;
@@ -30,9 +34,13 @@
       cursor: pointer;
 
       position: relative;
+      display: flex;
+      flex-shrink: 0;
       flex-direction: row;
       justify-content: center;
       align-items: center;
+
+      width: 300px;
 
       & > .icon {
         position: relative;
@@ -55,10 +63,16 @@
       color: #333;
       font-size: 10px;
 
+      overflow-x: scroll;
+      overflow-y: hidden;
+      scrollbar-width: none;
+
+      display: flex;
       flex-direction: row;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       gap: 15px;
+      margin-right: 15px;
 
       & > .unFoldButton {
         background-color: transparent;
