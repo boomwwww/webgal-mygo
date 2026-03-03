@@ -85,10 +85,16 @@ export const infoFetcher = async (url: string) => {
           }
         }
         if (command === 'Stage_Width') {
-          WebGAL.stageWidth = Number(res);
+          const stageWidth = Number(res);
+          if (Number.isFinite(stageWidth) && stageWidth > 0) {
+            WebGAL.stageWidth = stageWidth;
+          }
         }
         if (command === 'Stage_Height') {
-          WebGAL.stageHeight = Number(res);
+          const stageHeight = Number(res);
+          if (Number.isFinite(stageHeight) && stageHeight > 0) {
+            WebGAL.stageHeight = stageHeight;
+          }
         }
         if (command === 'Auto_Rotate') {
           WebGAL.autoRotate = res !== false;
