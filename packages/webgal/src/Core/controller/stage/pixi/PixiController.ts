@@ -743,15 +743,8 @@ export default class PixiStage {
         return;
       }
 
-      const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
-      const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
-      const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
-      const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
-      const motionToSet = motionFromState?.motion ?? '';
-      const expressionToSet = expressionFromState?.expression ?? '';
-      const blinkToSet = { ...baseBlinkParam, ...(blinkFromState?.blink ?? {}) };
-      const focusToSet = { ...baseFocusParam, ...(focusFromState?.focus ?? {}) };
-      let overrideBounds: [number, number, number, number] = motionFromState?.overrideBounds ?? [0, 0, 0, 0];
+      const currentMotionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+      let overrideBounds: [number, number, number, number] = currentMotionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
       const loadModelResults = await Promise.allSettled(
@@ -809,6 +802,15 @@ export default class PixiStage {
       }
 
       // 应用从状态中读取的 motion 和 expression
+      const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+      const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+      const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
+      const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
+      const motionToSet = motionFromState?.motion ?? '';
+      const expressionToSet = expressionFromState?.expression ?? '';
+      const blinkToSet = { ...baseBlinkParam, ...(blinkFromState?.blink ?? {}) };
+      const focusToSet = { ...baseFocusParam, ...(focusFromState?.focus ?? {}) };
+
       for (const model of models) {
         if (motionToSet) {
           // @ts-ignore
@@ -966,38 +968,6 @@ export default class PixiStage {
             let animation_index = 0;
             let priority_number = 3;
 
-            // motion
-            let motionToSet = '';
-            const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
-            if (motionFromState) {
-              motionToSet = motionFromState.motion;
-            }
-            instance.updateL2dMotionByKey(key, motionToSet);
-
-            // expression
-            let expressionToSet = '';
-            const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
-            if (expressionFromState) {
-              expressionToSet = expressionFromState.expression;
-            }
-            instance.updateL2dExpressionByKey(key, expressionToSet);
-
-            // blink
-            let blinkToSet: BlinkParam = baseBlinkParam;
-            const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
-            if (blinkFromState) {
-              blinkToSet = { ...blinkToSet, ...blinkFromState.blink };
-            }
-            instance.updateL2dBlinkByKey(key, blinkToSet);
-
-            // focus
-            let focusToSet: FocusParam = baseFocusParam;
-            const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
-            if (focusFromState) {
-              focusToSet = { ...focusToSet, ...focusFromState.focus };
-            }
-            instance.updateL2dFocusByKey(key, focusToSet);
-
             // 整理主模型和子模型信息
             const modelInfos: Array<{
               modelRelativePath: string;
@@ -1080,6 +1050,39 @@ export default class PixiStage {
               model.visible = false; // 先隐藏，等全部模型加载完再显示
               models.push(model);
             }
+
+            // motion
+            let motionToSet = '';
+            const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+            if (motionFromState) {
+              motionToSet = motionFromState.motion;
+            }
+            instance.updateL2dMotionByKey(key, motionToSet);
+
+            // expression
+            let expressionToSet = '';
+            const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+            if (expressionFromState) {
+              expressionToSet = expressionFromState.expression;
+            }
+            instance.updateL2dExpressionByKey(key, expressionToSet);
+
+            // blink
+            let blinkToSet: BlinkParam = baseBlinkParam;
+            const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
+            if (blinkFromState) {
+              blinkToSet = { ...blinkToSet, ...blinkFromState.blink };
+            }
+            instance.updateL2dBlinkByKey(key, blinkToSet);
+
+            // focus
+            let focusToSet: FocusParam = baseFocusParam;
+            const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
+            if (focusFromState) {
+              focusToSet = { ...focusToSet, ...focusFromState.focus };
+            }
+            instance.updateL2dFocusByKey(key, focusToSet);
+
             // 全部模型加载完毕，显示它们
             models.forEach((model) => {
               model.visible = true;
