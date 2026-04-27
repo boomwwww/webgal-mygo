@@ -89,9 +89,9 @@ const fr = {
             textFont: {
               title: 'Police du texte',
               options: {
+                resourceHanRounded: 'Resource Han Rounded',
                 siYuanSimSun: 'Source Han Serif',
                 SimHei: 'Sans',
-                lxgw: 'LXGW WenKai',
               },
             },
             textboxOpacity: {

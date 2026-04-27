@@ -96,9 +96,9 @@ const jp = {
             textFont: {
               title: 'フォント',
               options: {
+                resourceHanRounded: 'Resource Han Rounded',
                 siYuanSimSun: '源ノ明朝(中国語)',
                 SimHei: 'OPPO Sans',
-                lxgw: 'LXGW WenKai',
               },
             },
             textboxOpacity: {

@@ -89,9 +89,9 @@ const de = {
             textFont: {
               title: 'Schriftart',
               options: {
+                resourceHanRounded: 'Resource Han Rounded',
                 siYuanSimSun: 'Source Han Serif',
                 SimHei: 'Sans',
-                lxgw: 'LXGW WenKai',
               },
             },
             textboxOpacity: {
