@@ -90,16 +90,16 @@ export default class PixiStage {
     const targetPosition = target.position;
     if (target.scale) Object.assign(targetScale, source.scale);
     if (target.position) Object.assign(targetPosition, source.position);
-    if (convertAlpha) {
-      const sourceAlpha = source.alpha;
-      if (sourceAlpha !== undefined) {
-        source.alpha = 1;
-        (source as any).alphaFilterVal = sourceAlpha;
-      }
-    }
     Object.assign(target, source);
     target.scale = targetScale;
     target.position = targetPosition;
+    if (convertAlpha) {
+      const sourceAlpha = source.alpha;
+      if (sourceAlpha !== undefined) {
+        target.alpha = 1;
+        (target as any).alphaFilterVal = sourceAlpha;
+      }
+    }
   }
 
   /**
@@ -571,6 +571,9 @@ export default class PixiStage {
     if (metadata) {
       if (metadata.zIndex) {
         thisFigureContainer.zIndex = metadata.zIndex;
+      }
+      if (metadata.blendMode) {
+        thisFigureContainer.blendMode = metadata.blendMode;
       }
     }
     // 挂载
@@ -1117,6 +1120,9 @@ export default class PixiStage {
       if (metadata) {
         if (metadata.zIndex) {
           thisFigureContainer.zIndex = metadata.zIndex;
+        }
+        if (metadata.blendMode) {
+          thisFigureContainer.blendMode = metadata.blendMode;
         }
       }
       // 挂载
