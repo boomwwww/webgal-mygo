@@ -126,13 +126,13 @@
 }
 
 .version {
-  position: absolute;
+  position: fixed;
   display: flex;
   z-index: 15;
   font-size: 18px;
 
-  right: 24px;
-  top: 150px;
+  right: 100px;
+  top: 200px;
 
   color: white;
   opacity: 0.75;
