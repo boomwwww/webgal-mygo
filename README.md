@@ -1,6 +1,6 @@
 # WebGAL_MyGO专版引擎
 
-此仓库用于维护WebGAL的MyGO专版引擎。
+此仓库用于维护 WebGAL 的 MyGO 专版引擎。
 
 ---
 
