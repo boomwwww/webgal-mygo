@@ -37,6 +37,22 @@ export function Display() {
           />
         </NormalOption>
       )}
+      <NormalOption key="enableBangControlPanel" title={t('enableBangControlPanel.title')}>
+        <NormalButton
+          textList={t('enableBangControlPanel.options.on', 'enableBangControlPanel.options.off')}
+          functionList={[
+            () => {
+              dispatch(setOptionData({ key: 'enableBangControlPanel', value: true }));
+              setStorage();
+            },
+            () => {
+              dispatch(setOptionData({ key: 'enableBangControlPanel', value: false }));
+              setStorage();
+            },
+          ]}
+          currentChecked={userDataState.optionData.enableBangControlPanel ? 0 : 1}
+        />
+      </NormalOption>
       <NormalOption key="textSize" title={t('textSize.title')}>
         <NormalButton
           textList={t('textSize.options.small', 'textSize.options.medium', 'textSize.options.large')}

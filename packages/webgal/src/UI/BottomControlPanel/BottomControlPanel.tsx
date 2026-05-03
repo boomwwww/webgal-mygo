@@ -49,6 +49,7 @@ export const BottomControlPanel = () => {
   const { isSupported: isFullscreenSupport, isFullScreen, toggle: toggleFullscreen } = useFullScreen();
   const GUIStore = useSelector((state: RootState) => state.GUI);
   const stageState = useSelector((state: RootState) => state.stage);
+  const userData = useSelector((state: RootState) => state.userData);
   const dispatch = useDispatch();
   const setComponentVisibility = (component: keyof componentsVisibility, visibility: boolean) => {
     dispatch(setVisibility({ component, visibility }));
@@ -81,7 +82,7 @@ export const BottomControlPanel = () => {
   return (
     // <div className={styles.ToCenter}>
     <>
-      {GUIStore.showTextBox && stageState.enableFilm === '' && (
+      {GUIStore.showTextBox && !userData.optionData.enableBangControlPanel && stageState.enableFilm === '' && (
         <div className={styles.main} style={{ visibility: GUIStore.controlsVisibility ? 'visible' : 'hidden' }}>
           {GUIStore.showTextBox && (
             <span

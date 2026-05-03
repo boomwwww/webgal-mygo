@@ -70,6 +70,13 @@ const jp = {
                 off: 'オフ',
               },
             },
+            enableBangControlPanel: {
+              title: 'BanG Dream スタイルのメニュー',
+              options: {
+                on: 'オン',
+                off: 'オフ',
+              },
+            },
             textSpeed: {
               title: 'テキスト表示速度',
               options: {
