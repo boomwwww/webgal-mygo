@@ -96,6 +96,7 @@ export function BangBottomControlPanel() {
   };
 
   const isFolded = useValue(true);
+  const showVersion = useValue(true);
 
   return GUIStore.showTextBox && userData.optionData.enableBangControlPanel && stageState.enableFilm === '' ? (
     <div
@@ -258,7 +259,13 @@ export function BangBottomControlPanel() {
           />
         </div>
       </div>
-      <div className={styles.version}>
+      <div
+        className={styles.version}
+        onClick={() => {
+          showVersion.value = !showVersion.value;
+        }}
+        style={{ opacity: showVersion.value ? 1 : 0 }}
+      >
         <div>WebGAL MyGO Engine v{config.version}</div>
         <div>( Based on WebGAL v{__INFO.version} )</div>
       </div>
