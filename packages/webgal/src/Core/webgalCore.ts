@@ -21,4 +21,5 @@ export class WebgalCore {
   public styleObjects: Map<string, IWebGALStyleObj> = new Map();
   public stageWidth = 2560;
   public stageHeight = 1440;
+  public autoRotate = true;
 }

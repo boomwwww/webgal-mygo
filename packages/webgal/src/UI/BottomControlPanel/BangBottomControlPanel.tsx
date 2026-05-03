@@ -1,3 +1,4 @@
+import React from 'react';
 import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
 import { backToTitle } from '@/Core/controller/gamePlay/backToTitle';
 import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
@@ -86,6 +87,13 @@ export function BangBottomControlPanel() {
     );
   }
 
+  const handleWheel = (ev: React.WheelEvent<HTMLDivElement>) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const target = ev.currentTarget;
+    target.scrollLeft += ev.deltaY;
+  };
+
   const isFolded = useValue(true);
 
   return GUIStore.showTextBox && stageState.enableFilm === '' ? (
@@ -93,34 +101,28 @@ export function BangBottomControlPanel() {
       className={styles.main}
       style={{
         visibility: GUIStore.controlsVisibility ? 'visible' : 'hidden',
-        width: isFolded.value ? '320px' : '2000px',
+        width: isFolded.value ? '320px' : '2020px',
       }}
     >
-      <div className={styles.background} style={{ width: isFolded.value ? '300px' : '1980px' }}>
+      <div className={styles.background}>
         <div
           className={styles.foldButton}
-          style={{ display: isFolded.value ? 'flex' : 'none' }}
           onClick={() => {
-            isFolded.value = false;
+            isFolded.value = !isFolded.value;
           }}
         >
           <div className={styles.icon}>
-            <LeftTwo theme="filled" size={64} />
+            <LeftTwo theme="filled" size={64} style={{ display: isFolded.value ? 'inline' : 'none' }} />
+            <RightTwo theme="filled" size={64} style={{ display: isFolded.value ? 'none' : 'inline' }} />
           </div>
           <div className={styles.text}>菜单</div>
         </div>
-        <div className={styles.buttons} style={{ display: isFolded.value ? 'none' : 'flex' }}>
-          <span
-            className={styles.unFoldButton}
-            onClick={() => {
-              isFolded.value = true;
-            }}
-          >
-            <div className={styles.icon}>
-              <RightTwo theme="filled" size={64} />
-            </div>
-            <div className={styles.text}>菜单</div>
-          </span>
+        <div
+          className={styles.buttons}
+          style={{ display: isFolded.value ? 'none' : 'flex' }}
+          data-control-panel="bottom"
+          onWheel={handleWheel}
+        >
           <PanelButton
             icon={<Home />}
             text={t('buttons.title')}
