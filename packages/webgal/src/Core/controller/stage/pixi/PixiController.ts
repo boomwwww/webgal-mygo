@@ -774,11 +774,9 @@ export default class PixiStage {
       let overrideBounds: [number, number, number, number] = motionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
-
-      for (const modelConfig of modelConfigs) {
-        const { path: modelPath, x, y, xscale, yscale } = modelConfig;
-        try {
-          const model = await Live2D.Live2DModel.from(modelPath, {
+      const loadModelResults = await Promise.allSettled(
+        modelConfigs.map((config) => {
+          return Live2D.Live2DModel.from(config.path, {
             autoInteract: false,
             overWriteBounds: {
               x0: overrideBounds[0],
@@ -787,33 +785,46 @@ export default class PixiStage {
               y1: overrideBounds[3],
             },
           });
-          if (!model) continue;
-          // 暂时隐藏模型，等全部模型加载后再统一显示
-          model.visible = false;
-          this.setContainerInitialPosition({
-            container: container,
-            childContainer: model,
-            originalWidth: model.width,
-            originalHeight: model.height,
-            position: presetPosition,
-            isLive2DFigure: true,
-            overrideBounds: overrideBounds,
-            transform: { xOffset: x, yOffset: y, xScale: xscale, yScale: yscale },
-            isJsonlFigure: true,
-          });
-          models.push(model);
+        }),
+      ).catch((e) => {
+        console.error('addJsonlFigure 加载模型失败:', e);
+      });
 
-          // 每个模型加载完立刻设置 PARAM_IMPORT
-          if (paramImport !== null) {
-            try {
-              model.internalModel?.coreModel?.setParamFloat?.('PARAM_IMPORT', paramImport);
-              console.info(`✅ 设置 PARAM_IMPORT = ${paramImport} 给模型: ${modelPath}`);
-            } catch (e) {
-              console.warn(`❌ 设置 PARAM_IMPORT 失败 (${modelPath})`, e);
-            }
+      if (!loadModelResults) return;
+
+      for (let i = 0; i < loadModelResults.length; i++) {
+        const result = loadModelResults[i];
+        if (result.status !== 'fulfilled') {
+          console.warn(`JSONL 第${i}个模型加载失败, 原因: ${result.reason}`);
+          continue;
+        }
+        const { x, y, xscale, yscale } = modelConfigs[i];
+        const modelPath = modelConfigs[i].path;
+        const model = result.value;
+        if (!model) continue;
+        // 暂时隐藏模型，等全部模型加载后再统一显示
+        model.visible = false;
+        this.setContainerInitialPosition({
+          container: container,
+          childContainer: model,
+          originalWidth: model.width,
+          originalHeight: model.height,
+          position: presetPosition,
+          isLive2DFigure: true,
+          overrideBounds: overrideBounds,
+          transform: { xOffset: x, yOffset: y, xScale: xscale, yScale: yscale },
+          isJsonlFigure: true,
+        });
+        models.push(model);
+
+        // 每个模型加载完立刻设置 PARAM_IMPORT
+        if (paramImport !== null) {
+          try {
+            model.internalModel?.coreModel?.setParamFloat?.('PARAM_IMPORT', paramImport);
+            console.info(`✅ 设置 PARAM_IMPORT = ${paramImport} 给模型: ${modelPath}`);
+          } catch (e) {
+            console.warn(`❌ 设置 PARAM_IMPORT 失败 (${modelPath})`, e);
           }
-        } catch (err) {
-          console.warn(`加载模型 ${modelPath} 失败:`, err);
         }
       }
 
@@ -827,22 +838,12 @@ export default class PixiStage {
           // @ts-ignore
           model.expression(expressionToSet);
         }
-        if (blinkToSet) {
-          // @ts-ignore
-          model.internalModel?.setBlinkParam(blinkToSet);
-        }
-        if (focusToSet) {
-          // @ts-ignore
-          model.internalModel?.focusController?.focus(focusToSet.x, focusToSet.y, focusToSet.instant);
-        }
         // 统一显示模型
         model.visible = true;
       }
 
       if (motionToSet) this.updateL2dMotionByKey(key, motionToSet);
       if (expressionToSet) this.updateL2dExpressionByKey(key, expressionToSet);
-      if (blinkToSet) this.updateL2dBlinkByKey(key, blinkToSet);
-      if (focusToSet) this.updateL2dFocusByKey(key, focusToSet);
     } catch (e) {
       console.error('addJsonlFigure 加载失败:', e);
     }
@@ -1042,17 +1043,33 @@ export default class PixiStage {
 
             const models: any[] = [];
             const wmdlBaseDir = url.substring(0, url.lastIndexOf('/') + 1);
-            for (let i = 0; i < modelInfos.length; i++) {
+
+            const loadResult = await Promise.allSettled(
+              modelInfos.map((modelInfo) =>
+                Live2D.Live2DModel.from(wmdlBaseDir + modelInfo.modelRelativePath, {
+                  autoInteract: false,
+                  overWriteBounds: {
+                    x0: overrideBounds[0],
+                    y0: overrideBounds[1],
+                    x1: overrideBounds[2],
+                    y1: overrideBounds[3],
+                  },
+                }),
+              ),
+            ).catch((err) => {
+              console.error(`WMDL 模型加载失败: ${err}`);
+            });
+
+            if (!loadResult) return;
+
+            for (let i = 0; i < loadResult.length; i++) {
+              const result = loadResult[i];
+              if (result.status !== 'fulfilled') {
+                console.warn(`WMDL 第${i}个模型加载失败, 原因: ${result.reason}`);
+                continue;
+              }
               const modelInfo = modelInfos[i];
-              const model = await Live2D.Live2DModel.from(wmdlBaseDir + modelInfo.modelRelativePath, {
-                autoInteract: false,
-                overWriteBounds: {
-                  x0: overrideBounds[0],
-                  y0: overrideBounds[1],
-                  x1: overrideBounds[2],
-                  y1: overrideBounds[3],
-                },
-              });
+              const model = result.value;
               model.zIndex = i;
               stage.setContainerInitialPosition({
                 container: thisFigureContainer,
