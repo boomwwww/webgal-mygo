@@ -575,15 +575,8 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata) {
-      if (metadata.zIndex) {
-        thisFigureContainer.zIndex = metadata.zIndex;
-      }
-      if (metadata.blendMode) {
-        thisFigureContainer.blendMode = metadata.blendMode;
-      }
-    }
+    this.applyFigureMetadata(thisFigureContainer, key);
+
     // 挂载
     this.figureContainer.addChild(thisFigureContainer);
     const figureUuid = uuid();
@@ -640,11 +633,7 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    // 设置 zIndex（如果 metadata 有）
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex !== undefined) {
-      thisFigureContainer.zIndex = metadata.zIndex;
-    }
+    this.applyFigureMetadata(thisFigureContainer, key);
 
     // 添加容器到舞台
     this.figureContainer.addChild(thisFigureContainer);
@@ -696,8 +685,7 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex) container.zIndex = metadata.zIndex;
+    this.applyFigureMetadata(container, key);
 
     this.figureContainer.addChild(container);
     this.figureObjects.push({
@@ -859,11 +847,7 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    // 设置 zIndex（如果 metadata 有）
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex !== undefined) {
-      thisFigureContainer.zIndex = metadata.zIndex;
-    }
+    this.applyFigureMetadata(thisFigureContainer, key);
 
     // 添加容器到舞台
     this.figureContainer.addChild(thisFigureContainer);
@@ -939,12 +923,7 @@ export default class PixiStage {
         this.removeStageObjectByKey(key);
       }
 
-      const metadata = this.getFigureMetadataByKey(key);
-      if (metadata) {
-        if (metadata.zIndex) {
-          thisFigureContainer.zIndex = metadata.zIndex;
-        }
-      }
+      this.applyFigureMetadata(thisFigureContainer, key);
       // 挂载
       this.figureContainer.addChild(thisFigureContainer);
       const figureUuid = uuid();
@@ -1155,15 +1134,7 @@ export default class PixiStage {
         this.removeStageObjectByKey(key);
       }
 
-      const metadata = this.getFigureMetadataByKey(key);
-      if (metadata) {
-        if (metadata.zIndex) {
-          thisFigureContainer.zIndex = metadata.zIndex;
-        }
-        if (metadata.blendMode) {
-          thisFigureContainer.blendMode = metadata.blendMode;
-        }
-      }
+      this.applyFigureMetadata(thisFigureContainer, key);
       // 挂载
       this.figureContainer.addChild(thisFigureContainer);
       const figureUuid = uuid();
@@ -1651,6 +1622,21 @@ export default class PixiStage {
   private unlockStageObject(targetName: string) {
     const index = this.lockTransformTarget.findIndex((name) => name === targetName);
     if (index >= 0) this.lockTransformTarget.splice(index, 1);
+  }
+
+  /**
+   * 应用立绘元数据
+   */
+  private applyFigureMetadata(container: WebGALPixiContainer, key: string) {
+    const metadata = this.getFigureMetadataByKey(key);
+    if (metadata === undefined) return;
+
+    if (metadata?.blendMode !== undefined) {
+      container.blendMode = metadata.blendMode;
+    }
+    if (metadata?.zIndex !== undefined) {
+      container.zIndex = metadata.zIndex;
+    }
   }
 
   /**
