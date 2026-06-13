@@ -30,5 +30,3 @@ packages/parser/build
 packages/webgal/src/Core/util/pixiPerformManager/initRegister.ts
 
 packages/webgal/public/game/figure/**/*
-!logos.webp
-packages/webgal/public/lib/**/*
