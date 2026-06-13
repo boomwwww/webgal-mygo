@@ -8,13 +8,13 @@ import { initKey } from '@/Core/controller/storage/fastSaveLoad';
 import { getFastSaveFromStorage, getSavesFromStorage } from '@/Core/controller/storage/savesController';
 import { logger } from '@/Core/util/logger';
 import axios from 'axios';
-import { IGameVar } from '@/store/stageInterface';
+import { IGameVar } from '@/Core/Modules/stage/stageInterface';
 
 /**
  * 获取游戏信息
  * @param url 游戏信息路径
  */
-export const infoFetcher = async (url: string) => {
+export const infoFetcher = (url: string): Promise<IGameVar> => {
   const dispatch = webgalStore.dispatch;
   const r = await axios.get(url);
   let gameConfigRaw: string = r.data;

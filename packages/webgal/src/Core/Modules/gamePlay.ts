@@ -15,6 +15,7 @@ export class Gameplay {
   public autoTimeout: ReturnType<typeof setTimeout> | null = null;
   public pixiStage: PixiStage | null = null;
   public performController = new PerformController();
+  public isFastPreview = false;
 
   /* 有图标状态需求 */
   private _isAuto = false;
@@ -33,10 +34,14 @@ export class Gameplay {
     this._isFast = value;
     setFastButton(value);
   }
+  public get skipAnimation() {
+    return this.isFast || this.isFastPreview;
+  }
 
   public resetGamePlay() {
     this.isAuto = false;
     this.isFast = false;
+    this.isFastPreview = false;
     this.isWaiting = false;
     const autoInterval = this.autoInterval;
     if (autoInterval !== null) clearInterval(autoInterval);

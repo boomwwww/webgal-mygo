@@ -6,6 +6,7 @@ Game_Logo:WebGAL_MyGO_Enter.webp;
 Default_Language:zh_CN;
 Show_panic:true;
 Enable_Appreciation:true;
+Enable_Continue:true;
 Legacy_Expression_Blend_Mode:true;
 Positioning_Type:M_3_1_0;
 Stage_Width:2560;

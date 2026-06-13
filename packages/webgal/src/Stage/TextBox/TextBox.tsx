@@ -8,6 +8,7 @@ import { match } from '@/Core/util/match';
 import { textSize } from '@/store/userDataInterface';
 import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';
 import useEscape from '@/hooks/useEscape';
+import { useStageState } from '@/hooks/useStageState';
 import { WebGAL } from '@/Core/WebGAL';
 
 const userAgent = navigator.userAgent;
@@ -20,13 +21,14 @@ export interface EnhancedNode {
 }
 
 export const TextBox = () => {
-  const stageState = useSelector((state: RootState) => state.stage);
+  const stageState = useStageState();
   const guiState = useSelector((state: RootState) => state.GUI);
   const userDataState = useSelector((state: RootState) => state.userData);
   const textDelay = useTextDelay(userDataState.optionData.textSpeed);
   const textDuration = useTextAnimationDuration(userDataState.optionData.textSpeed);
   let size = getTextSize(userDataState.optionData.textSize) + '%';
   const font = useFontFamily();
+  const isRead = stageState.isRead;
   const isText = stageState.showText !== '' || stageState.showName !== '';
   let textSizeState = userDataState.optionData.textSize;
   if (isText && stageState.showTextSize !== -1) {
@@ -88,6 +90,7 @@ export const TextBox = () => {
   return (
     <Textbox
       textArray={textArray}
+      isRead={isRead}
       isText={isText}
       textDelay={textDelay}
       showName={showName}

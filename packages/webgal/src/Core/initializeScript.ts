@@ -7,20 +7,19 @@ import { assetSetter, fileType } from './util/gameAssetsAccess/assetSetter';
 import { sceneFetcher } from './controller/scene/sceneFetcher';
 import { sceneParser } from './parser/sceneParser';
 import { bindExtraFunc } from '@/Core/util/coreInitialFunction/bindExtraFunc';
-import { webSocketFunc } from '@/Core/util/syncWithEditor/webSocketFunc';
-import uniqWith from 'lodash/uniqWith';
-import { scenePrefetcher } from './util/prefetcher/scenePrefetcher';
+import { startPreviewSyncRuntime } from '@/Core/util/syncWithEditor/previewSyncRuntime';
 import PixiStage from '@/Core/controller/stage/pixi/PixiController';
+import { syncPixiStageState } from '@/Core/controller/stage/pixi/syncPixiStageState';
 import axios from 'axios';
 import { __INFO } from '@/config/info';
 import { WebGAL } from '@/Core/WebGAL';
 import { loadTemplate } from '@/Core/util/coreInitialFunction/templateLoader';
+import { stageStateManager } from '@/Core/Modules/stage/stageStateManager';
+import { autoFastSaveGame } from './controller/storage/fastSaveLoad';
 import { useIsWaiting } from './controller/gamePlay/isWaiting';
 
-const u = navigator.userAgent;
-export const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
+export const isIOS = window.__WEBGAL_DEVICE_INFO__?.isIOS ?? false; // 判断是否是 iOS 终端
 
-let loadingTextElement: HTMLElement | null;
 
 /**
  * 引擎初始化函数
@@ -74,6 +73,10 @@ export const initializeScript = async (): Promise<void> => {
    */
   setLoadingText('Initializing rendering engine');
   WebGAL.gameplay.pixiStage = new PixiStage();
+  stageStateManager.setCommitHandler((stageState, options) => {
+    syncPixiStageState(stageState, options);
+    if (options.notifyReact) autoFastSaveGame();
+  });
 
   /**
    * iOS 设备 卸载所有 Service Worker
@@ -93,7 +96,7 @@ export const initializeScript = async (): Promise<void> => {
    * 绑定工具函数
    */
   bindExtraFunc();
-  webSocketFunc();
+  startPreviewSyncRuntime();
   setLoadingText('Ready to play');
 };
 
