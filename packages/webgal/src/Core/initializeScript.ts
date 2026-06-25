@@ -20,58 +20,44 @@ import { useIsWaiting } from './controller/gamePlay/isWaiting';
 
 export const isIOS = window.__WEBGAL_DEVICE_INFO__?.isIOS ?? false; // 判断是否是 iOS 终端
 
-
 /**
  * 引擎初始化函数
  */
-export const initializeScript = async (): Promise<void> => {
+export const initializeScript = (): void => {
   // 打印初始log信息
   logger.info(`WebGAL v${__INFO.version}`);
   logger.info('Github: https://github.com/OpenWebGAL/WebGAL ');
   logger.info('Made with ❤ by OpenWebGAL');
-
-  loadingTextElement = document.getElementById('title-enter__loading-text');
-  console.log(loadingTextElement);
-
-  setLoadingText('Loading template');
-  await loadTemplate();
+  loadTemplate();
   // 激活强制缩放
   // 在调整窗口大小时重新计算宽高，设计稿按照 1600*900。
-  if (isIOS) {
+  if (isIOS && window.innerWidth <= window.innerHeight) {
     /**
      * iOS
      */
     alert(
-      `iOS 用户请横屏使用以获得最佳体验
-| Please use landscape mode on iOS for the best experience
-| iOS ユーザーは横画面での使用をお勧めします`,
+      `iOS 用户请横屏后刷新页面，以获得最佳体验
+| Please rotate to landscape and refresh the page on iOS for the best experience
+| iOS ユーザーは横画面にしてからページを再読み込みしてください`,
     );
   }
 
   // 获得 userAnimation
-  setLoadingText('Loading user styles');
   loadStyle('./game/userStyleSheet.css');
   // 获得 user Animation
-  setLoadingText('Loading user animations');
-  await getUserAnimation();
-  // 获取游戏信息
-  setLoadingText('Loading game info');
-  await infoFetcher('./game/config.txt');
+  getUserAnimation();
   // 获取start场景
   const sceneUrl: string = assetSetter('start.txt', fileType.scene);
   // 场景写入到运行时
-  setLoadingText('Loading start scene');
-  const rawScene = await sceneFetcher(sceneUrl);
-  WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, 'start.txt', sceneUrl);
-  // 开始场景的预加载
-  const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
-  WebGAL.sceneManager.settledScenes.push(sceneUrl); // 放入已加载场景列表，避免递归加载相同场景
-  const subSceneListUniq = uniqWith(subSceneList); // 去重
-  scenePrefetcher(subSceneListUniq);
+  const initialSceneReady = sceneFetcher(sceneUrl).then((rawScene) => {
+    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, 'start.txt', sceneUrl);
+    WebGAL.sceneManager.settledScenes.add(sceneUrl); // 放入已加载场景列表，避免递归加载相同场景
+  });
+  // 获取游戏信息
+  infoFetcher('./game/config.txt');
   /**
    * 启动Pixi
    */
-  setLoadingText('Initializing rendering engine');
   WebGAL.gameplay.pixiStage = new PixiStage();
   stageStateManager.setCommitHandler((stageState, options) => {
     syncPixiStageState(stageState, options);
@@ -91,20 +77,12 @@ export const initializeScript = async (): Promise<void> => {
   //   });
   // }
   useIsWaiting(WebGAL);
-
   /**
    * 绑定工具函数
    */
   bindExtraFunc();
   startPreviewSyncRuntime();
-  setLoadingText('Ready to play');
 };
-
-function setLoadingText(text: string) {
-  if (loadingTextElement) {
-    loadingTextElement.textContent = text;
-  }
-}
 
 function loadStyle(url: string) {
   const link = document.createElement('link');
@@ -115,17 +93,19 @@ function loadStyle(url: string) {
   head.appendChild(link);
 }
 
-async function getUserAnimation() {
-  const res = await axios.get('./game/animation/animationTable.json');
-  const animations: Array<string> = res.data;
-  for (const animationName of animations) {
-    const res = await axios.get(`./game/animation/${animationName}.json`);
-    if (res.data) {
-      const userAnimation = {
-        name: animationName,
-        effects: res.data,
-      };
-      WebGAL.animationManager.addAnimation(userAnimation);
+function getUserAnimation() {
+  axios.get('./game/animation/animationTable.json').then((res) => {
+    const animations: Array<string> = res.data;
+    for (const animationName of animations) {
+      axios.get(`./game/animation/${animationName}.json`).then((res) => {
+        if (res.data) {
+          const userAnimation = {
+            name: animationName,
+            effects: res.data,
+          };
+          WebGAL.animationManager.addAnimation(userAnimation);
+        }
+      });
     }
-  }
+  });
 }

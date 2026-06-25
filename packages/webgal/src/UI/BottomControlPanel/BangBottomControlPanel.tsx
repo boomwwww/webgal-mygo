@@ -1,4 +1,3 @@
-import React from 'react';
 import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
 import { backToTitle } from '@/Core/controller/gamePlay/backToTitle';
 import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
@@ -35,6 +34,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './bangBottomControlPanel.module.scss';
+import { useStageState } from '@/hooks/useStageState';
 import { useValue } from '@/hooks/useValue';
 import { BangBottom } from './BangBottom';
 import { FC, ReactNode } from 'react';
@@ -46,7 +46,7 @@ export function BangBottomControlPanel() {
   const t = useTrans('gaming.');
   const strokeWidth = 2.5;
   const { i18n } = useTranslation();
-  const { playSeDialogOpen } = useSoundEffect();
+  const { playSeEnter, playSeClick, playSeDialogOpen } = useSoundEffect();
   const lang = i18n.language;
   const isFr = lang === 'fr';
   let size = 42;
@@ -57,8 +57,7 @@ export function BangBottomControlPanel() {
   }
   const { isSupported: isFullscreenSupport, isFullScreen, toggle: toggleFullscreen } = useFullScreen();
   const GUIStore = useSelector((state: RootState) => state.GUI);
-  const stageState = useSelector((state: RootState) => state.stage);
-  const userData = useSelector((state: RootState) => state.userData);
+  const stageState = useStageState();
   const dispatch = useDispatch();
   const setComponentVisibility = (component: keyof componentsVisibility, visibility: boolean) => {
     dispatch(setVisibility({ component, visibility }));
@@ -88,7 +87,7 @@ export function BangBottomControlPanel() {
     );
   }
 
-  const handleWheel = (ev: React.WheelEvent<HTMLDivElement>) => {
+  const handleWheel = (ev: import('react').WheelEvent<HTMLDivElement>) => {
     ev.stopPropagation();
     ev.preventDefault();
     const target = ev.currentTarget;
@@ -98,7 +97,7 @@ export function BangBottomControlPanel() {
   const isFolded = useValue(true);
   const showVersion = useValue(true);
 
-  return GUIStore.showTextBox && userData.optionData.enableBangControlPanel && stageState.enableFilm === '' ? (
+  return GUIStore.showTextBox && stageState.enableFilm === '' ? (
     <div
       className={styles.main}
       style={{

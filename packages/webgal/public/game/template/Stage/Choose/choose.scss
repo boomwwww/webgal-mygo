@@ -7,66 +7,33 @@
   justify-content: center;
   align-items: center;
   z-index: 13;
-  background: transparent;
-  row-gap: 2em;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .Choose_item {
+  font-family: "WebgalUI", serif;
   cursor: pointer;
-  min-width: 100%;
+  min-width: 50%;
   padding: 0.25em 1em 0.25em 1em;
-  font-size: 200%;
-  color: rgb(80, 80, 80);
-  font-weight: normal;
+  font-size: 265%;
+  color: #8E354A;
   text-align: center;
-  border-radius: 9999px;
+  border-radius: 4px;
   border: 3px solid rgba(0, 0, 0, 0);
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.95);
-  margin: 12px 0;
-  transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s, text-shadow 0.3s;
-  transform: rotate(1deg);
-  height: 100px;
-  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.65);
+  margin: 0.25em 0 0.25em 0;
+  transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2);
-    border: 3px solid rgba(0, 0, 0, 0);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
+    border: 3px solid #8E354A;
   }
-
-  &::after {
-    content: '';
-    width: 4.5em;
-    height: 4.5em;
-    display: inline-block;
-    position: absolute;
-    bottom: -8px;
-    right: -2px;
-    background-image: url('game/template/assets/choose-background.svg');
-    background-position: right bottom;
-    background-repeat: no-repeat;
-    background-size: 4.5em;
-    opacity: 0.3;
-    transform: rotate(5deg);
-  }
-}
-
-.Choose_item_outer {
-  color: #333;
-  min-width: 60%;
-  height: 136px;
-  border-radius: 9999px;
-  padding: 0 72px;
-  background: rgba(255, 59, 114, 0.9);
-  transform: rotate(-1deg);
-  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.3);
-  margin-top: calc(0.5rem);
-  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
-  animation: fadeInRight 350ms ease 0s 1 normal forwards;
 }
 
 .Choose_item_disabled {
+  font-family: "WebgalUI", serif;
   cursor: not-allowed;
   min-width: 50%;
   padding: 0.25em 1em 0.25em 1em;
@@ -81,26 +48,7 @@
   transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s;
 }
 
-@keyframes fadeInRight {
-  0% {
-    opacity: 0;
-    transform: translateX(300px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateX(0) rotate(-1deg);
-  }
-}
-
-@keyframes fadeOutLeft {
-  0% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateX(-200px) rotate(-1deg);
-  }
+.Choose_item_outer {
+  color: #000;
+  min-width: 50%;
 }

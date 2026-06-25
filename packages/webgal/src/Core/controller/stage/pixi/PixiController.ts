@@ -4,6 +4,7 @@ import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/l
 import { isIOS } from '@/Core/initializeScript';
 import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiContainer';
 import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi/spine';
+import { SCREEN_CONSTANTS } from '@/Core/util/constants';
 import { logger } from '@/Core/util/logger';
 import { v4 as uuid } from 'uuid';
 import { cloneDeep, isEqual } from 'lodash';
@@ -113,8 +114,8 @@ export default class PixiStage {
   public notUpdateBacklogEffects = false;
   public readonly figureContainer: PIXI.Container;
   public figureObjects = this.createReactiveList<IStageObject>([]);
-  public stageWidth = WebGAL.stageWidth;
-  public stageHeight = WebGAL.stageHeight;
+  public stageWidth = SCREEN_CONSTANTS.width;
+  public stageHeight = SCREEN_CONSTANTS.height;
   public assetLoader = new PIXI.Loader();
   public readonly backgroundContainer: PIXI.Container;
   public backgroundObjects = this.createReactiveList<IStageObject>([]);
@@ -170,7 +171,10 @@ export default class PixiStage {
     app.renderer.view.id = 'pixiCanvas';
     // @ts-ignore
     app.renderer.autoResize = true;
-    app.renderer.resize(this.stageWidth, this.stageHeight);
+    const appRoot = document.getElementById('root');
+    if (appRoot) {
+      app.renderer.resize(appRoot.clientWidth, appRoot.clientHeight)
+    }
     if (isIOS) {
       app.renderer.view.style.zIndex = '-5';
     }
@@ -769,7 +773,7 @@ export default class PixiStage {
         return;
       }
 
-      const currentMotionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+      const currentMotionFromState = stageStateManager.getViewStageState().live2dMotion.find((e) => e.target === key);
       let overrideBounds: [number, number, number, number] = currentMotionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
@@ -828,10 +832,10 @@ export default class PixiStage {
       }
 
       // 应用从状态中读取的 motion 和 expression
-      const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
-      const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
-      const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
-      const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
+      const motionFromState = stageStateManager.getViewStageState().live2dMotion.find((e) => e.target === key);
+      const expressionFromState = stageStateManager.getViewStageState().live2dExpression.find((e) => e.target === key);
+      const blinkFromState = stageStateManager.getViewStageState().live2dBlink.find((e) => e.target === key);
+      const focusFromState = stageStateManager.getViewStageState().live2dFocus.find((e) => e.target === key);
       const motionToSet = motionFromState?.motion ?? '';
       const expressionToSet = expressionFromState?.expression ?? '';
       const blinkToSet = { ...baseBlinkParam, ...(blinkFromState?.blink ?? {}) };
@@ -974,7 +978,7 @@ export default class PixiStage {
 
             // live2dBounds
             let overrideBounds: [number, number, number, number] = [0, 0, 0, 0];
-            const mot = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+            const mot = stageStateManager.getViewStageState().live2dMotion.find((e) => e.target === key);
             if (mot?.overrideBounds) {
               overrideBounds = mot.overrideBounds;
             }
@@ -1068,7 +1072,7 @@ export default class PixiStage {
 
             // motion
             let motionToSet = '';
-            const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+            const motionFromState = stageStateManager.getViewStageState().live2dMotion.find((e) => e.target === key);
             if (motionFromState) {
               motionToSet = motionFromState.motion;
             }
@@ -1076,7 +1080,9 @@ export default class PixiStage {
 
             // expression
             let expressionToSet = '';
-            const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+            const expressionFromState = stageStateManager
+              .getViewStageState()
+              .live2dExpression.find((e) => e.target === key);
             if (expressionFromState) {
               expressionToSet = expressionFromState.expression;
             }
@@ -1084,7 +1090,7 @@ export default class PixiStage {
 
             // blink
             let blinkToSet: BlinkParam = baseBlinkParam;
-            const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
+            const blinkFromState = stageStateManager.getViewStageState().live2dBlink.find((e) => e.target === key);
             if (blinkFromState) {
               blinkToSet = { ...blinkToSet, ...blinkFromState.blink };
             }
@@ -1092,7 +1098,7 @@ export default class PixiStage {
 
             // focus
             let focusToSet: FocusParam = baseFocusParam;
-            const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
+            const focusFromState = stageStateManager.getViewStageState().live2dFocus.find((e) => e.target === key);
             if (focusFromState) {
               focusToSet = { ...focusToSet, ...focusFromState.focus };
             }
@@ -1759,7 +1765,7 @@ export default class PixiStage {
           switch (positioningType) {
             case 'M_3_0_0':
             case 'M_3_1_0':
-              container.setBaseX(this.stageWidth / 2 - 430);
+              container.setBaseX(850);
               break;
             default:
               container.setBaseX(targetWidth / 2);
@@ -1770,7 +1776,7 @@ export default class PixiStage {
           switch (positioningType) {
             case 'M_3_0_0':
             case 'M_3_1_0':
-              container.setBaseX(this.stageWidth / 2 + 430);
+              container.setBaseX(1710);
               break;
             default:
               container.setBaseX(this.stageWidth - targetWidth / 2);

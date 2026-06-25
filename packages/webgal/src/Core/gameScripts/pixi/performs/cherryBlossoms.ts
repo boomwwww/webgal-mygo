@@ -28,8 +28,8 @@ const pixiCherryBlossoms = (
   const effectsContainer =
     containerType === 'foreground' ? pixiStage.foregroundEffectsContainer : pixiStage.backgroundEffectsContainer;
 
-  const screenWidth = WebGAL.stageWidth;
-  const screenHeight = WebGAL.stageHeight;
+  const screenWidth = SCREEN_CONSTANTS.width;
+  const screenHeight = SCREEN_CONSTANTS.height;
 
   const container = new PIXI.Container();
 

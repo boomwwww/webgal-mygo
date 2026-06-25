@@ -82,7 +82,7 @@ export const BottomControlPanel = () => {
   return (
     // <div className={styles.ToCenter}>
     <>
-      {GUIStore.showTextBox && !userData.optionData.enableBangControlPanel && stageState.enableFilm === '' && (
+      {GUIStore.showTextBox && stageState.enableFilm === '' && (
         <div className={styles.main} style={{ visibility: GUIStore.controlsVisibility ? 'visible' : 'hidden' }}>
           {GUIStore.showTextBox && (
             <span

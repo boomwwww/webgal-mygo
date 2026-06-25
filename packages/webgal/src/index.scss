@@ -9,17 +9,12 @@
 
 @font-face {
   font-family: '思源宋体';
-  src: url('assets/fonts/mygo/JiangChengYuanTi_500W.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'LXGW';
-  src: url('assets/fonts/mygo/JiangChengYuanTi_500W.ttf') format('truetype');
+  src: url('assets/fonts/SourceHanSerifCN-Regular.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'WebgalUI';
-  src: url('assets/fonts/mygo/JiangChengYuanTi_500W.ttf') format('truetype');
+  src: url('assets/fonts/OPPOSans-R.ttf') format('truetype');
 }
 
 @font-face {
@@ -69,7 +64,6 @@ code {
 }
 
 #root {
-  position: absolute;
   width: $screenWidth;
   height: $screenHeight;
   overflow: hidden;
@@ -98,8 +92,6 @@ code {
 }
 
 .App {
-  position: absolute;
-  transform-origin: left top;
   height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 1);

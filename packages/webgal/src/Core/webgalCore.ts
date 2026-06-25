@@ -23,7 +23,5 @@ export class WebgalCore {
   public steam = new SteamIntegration();
   public template: WebgalTemplate | null = null;
   public styleObjects: Map<string, IWebGALStyleObj> = new Map();
-  public stageWidth = 2560;
-  public stageHeight = 1440;
   public autoRotate = true;
 }
