@@ -73,7 +73,7 @@ export function Display() {
           currentChecked={userDataState.optionData.textSize}
         />
       </NormalOption>
-      {/* <NormalOption key="textFont" title={t('textFont.title')}>
+      <NormalOption key="textFont" title={t('textFont.title')}>
         <NormalButton
           textList={fontOptionTexts}
           functionList={fontOptions.map((_, index) => () => {
@@ -82,7 +82,7 @@ export function Display() {
           })}
           currentChecked={currentFontIndex}
         />
-      </NormalOption> */}
+      </NormalOption>
       <NormalOption key="textSpeed" title={t('textSpeed.title')}>
         <CustomSlider
           value={userDataState.optionData.textSpeed}

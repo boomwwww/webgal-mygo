@@ -1,5 +1,12 @@
 {
-  "name": "MyGO Theme v3.1.2",
+  "name": "MyGO Theme v3.2.0",
   "webgal-version": "4.6.1",
-  "webgal-mygo-version": "3.1.2"
+  "webgal-mygo-version": "3.2.0",
+  "fonts": [
+    {
+      "font-family": "江城圆体",
+      "url": "assets/fonts/JiangChengYuanTi/JiangChengYuanTi_500W.ttf",
+      "type": "truetype"
+    }
+  ]
 }

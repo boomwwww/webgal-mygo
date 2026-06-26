@@ -13,8 +13,11 @@ import Menu from '@/UI/Menu/Menu';
 import GlobalDialog from '@/UI/GlobalDialog/GlobalDialog';
 import PanicOverlay from '@/UI/PanicOverlay/PanicOverlay';
 import DevPanel from '@/UI/DevPanel/DevPanel';
+import { RootState } from '@/store/store';
+import { useSelector } from 'react-redux';
 
 export default function App() {
+  const userData = useSelector((state: RootState) => state.userData);
   useEffect(() => {
     initializeScript();
   }, []);
@@ -22,8 +25,7 @@ export default function App() {
     <div className="App">
       <Translation />
       <Stage />
-      <BottomControlPanel />
-      <BangBottomControlPanel />
+      {userData.optionData.enableBangControlPanel ? <BangBottomControlPanel /> : <BottomControlPanel />}
       <BottomControlPanelFilm />
       <Backlog />
       <Title />

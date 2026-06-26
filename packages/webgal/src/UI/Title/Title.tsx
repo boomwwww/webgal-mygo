@@ -1,7 +1,4 @@
-import { CSSProperties } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { config } from '@/config/mygo';
-import { __INFO } from '@/config/info';
 import { RootState } from '@/store/store';
 import { fullScreenOption } from '@/store/userDataInterface';
 import { setMenuPanelTag, setVisibility } from '@/store/GUIReducer';
@@ -15,6 +12,8 @@ import { playBgm } from '@/Core/controller/stage/playBgm';
 import { continueGame, startGame } from '@/Core/controller/gamePlay/startContinueGame';
 import { showGlogalDialog } from '../GlobalDialog/GlobalDialog';
 import styles from './title.module.scss';
+import { __INFO } from '@/config/info';
+import { config } from '@/config/mygo';
 
 /** 标题页 */
 export default function Title() {
