@@ -7,7 +7,7 @@ import { getTextSize } from '@/UI/getTextSize';
 import { match } from '@/Core/util/match';
 import { textSize } from '@/store/userDataInterface';
 import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';
-import { SCREEN_CONSTANTS } from '@/Core/util/constants'
+import { SCREEN_CONSTANTS } from '@/Core/util/constants';
 import useEscape from '@/hooks/useEscape';
 import { useStageState } from '@/hooks/useStageState';
 

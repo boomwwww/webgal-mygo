@@ -92,17 +92,15 @@ export function Display() {
           }}
         />
       </NormalOption>
-      {/* <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.textboxOpacity}
-          uniqueID={t('textboxOpacity.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'textboxOpacity', value: Number(newValue) }));
+      <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
+        <CustomSlider
+          value={userDataState.optionData.textboxOpacity}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'textboxOpacity', value: newValue }));
             setStorage();
           }}
         />
-      </NormalOption> */}
+      </NormalOption>
       <NormalOption full key="textPreview" title={t('textPreview.title')}>
         {/* 这是一个临时的组件，用于模拟文本预览的效果 */}
         <TextPreview />
