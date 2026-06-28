@@ -90,18 +90,18 @@ export const infoFetcher = (url: string): Promise<IGameVar> => {
                 Live2D.positioningType = 'M_3_1_0';
             }
           }
-          if (command === 'Stage_Width') {
-            const stageWidth = Number(res);
-            if (Number.isFinite(stageWidth) && stageWidth > 0) {
-              WebGAL.stageWidth = stageWidth;
-            }
-          }
-          if (command === 'Stage_Height') {
-            const stageHeight = Number(res);
-            if (Number.isFinite(stageHeight) && stageHeight > 0) {
-              WebGAL.stageHeight = stageHeight;
-            }
-          }
+          // if (command === 'Stage_Width') {
+          //   const stageWidth = Number(res);
+          //   if (Number.isFinite(stageWidth) && stageWidth > 0) {
+          //     WebGAL.stageWidth = stageWidth;
+          //   }
+          // }
+          // if (command === 'Stage_Height') {
+          //   const stageHeight = Number(res);
+          //   if (Number.isFinite(stageHeight) && stageHeight > 0) {
+          //     WebGAL.stageHeight = stageHeight;
+          //   }
+          // }
           if (command === 'Auto_Rotate') {
             WebGAL.autoRotate = res !== false;
           }
