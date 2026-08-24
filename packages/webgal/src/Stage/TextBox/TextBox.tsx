@@ -7,9 +7,11 @@ import { getTextSize } from '@/UI/getTextSize';
 import { match } from '@/Core/util/match';
 import { textSize } from '@/store/userDataInterface';
 import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';
-import { SCREEN_CONSTANTS } from '@/Core/util/constants';
+// import { SCREEN_CONSTANTS } from '@/Core/util/constants';
 import useEscape from '@/hooks/useEscape';
 import { useStageState } from '@/hooks/useStageState';
+
+import { WebGAL } from '@/Core/WebGAL';
 
 const userAgent = navigator.userAgent;
 const isFirefox = /firefox/i.test(userAgent);
@@ -63,8 +65,8 @@ export const TextBox = () => {
     }
 
     const handleResize = () => {
-      const targetHeight = SCREEN_CONSTANTS.height;
-      const targetWidth = SCREEN_CONSTANTS.width;
+      const targetHeight = WebGAL.stageHeight;
+      const targetWidth = WebGAL.stageWidth;
 
       const h = window.innerHeight; // 窗口高度
       const w = window.innerWidth; // 窗口宽度

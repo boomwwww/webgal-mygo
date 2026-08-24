@@ -29,6 +29,19 @@ export enum fullScreenOption {
 }
 
 /**
+ * 画面方向（屏幕旋转）的类型
+ * auto: 自动（根据窗口方向与舞台方向自动旋转）
+ * angle0: 固定 0°（不旋转）
+ * angle90: 固定顺时针旋转 90°
+ * angle180: 固定旋转 180°
+ * angle270: 固定逆时针旋转 90°（即 270°）
+ */
+export type screenRotation = 'auto' | 'angle0' | 'angle90' | 'angle180' | 'angle270';
+
+/** 画面方向的可选值列表，顺序即设置面板中的按钮顺序 */
+export const screenRotationOptions: screenRotation[] = ['auto', 'angle0', 'angle90', 'angle180', 'angle270'];
+
+/**
  * @interface IOptionData 用户设置数据接口
  */
 export interface IOptionData {
@@ -48,6 +61,7 @@ export interface IOptionData {
   fullScreen: fullScreenOption;
   skipAll: boolean; // 快进已读/快进全文
   enableBangControlPanel: boolean; // 使用 BanGDream 控制面板
+  screenRotation: screenRotation; // 画面方向（自动旋转或固定角度）
 }
 
 /**

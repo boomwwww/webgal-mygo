@@ -84,6 +84,16 @@ const en = {
                 off: 'OFF',
               },
             },
+            screenRotation: {
+              title: 'Screen Orientation',
+              options: {
+                auto: 'Auto',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: 'Text Speed',
               options: {

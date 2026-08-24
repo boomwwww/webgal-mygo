@@ -84,6 +84,16 @@ const jp = {
                 off: 'オフ',
               },
             },
+            screenRotation: {
+              title: '画面の向き',
+              options: {
+                auto: '自動',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: 'テキスト表示速度',
               options: {

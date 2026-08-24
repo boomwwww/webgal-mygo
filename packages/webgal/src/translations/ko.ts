@@ -77,6 +77,16 @@ const ko = {
                 off: '끄기',
               },
             },
+            screenRotation: {
+              title: '화면 방향',
+              options: {
+                auto: '자동',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: '텍스트 표시 속도',
               options: {

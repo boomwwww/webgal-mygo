@@ -13,6 +13,8 @@
 $height: 330px;
 
 .TextBox_Container {
+  display: flex;
+  justify-content: center;
   position: absolute;
   z-index: 6;
   bottom: 0;

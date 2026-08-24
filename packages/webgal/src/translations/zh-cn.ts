@@ -84,6 +84,16 @@ const zhCn = {
                 off: '关闭',
               },
             },
+            screenRotation: {
+              title: '画面方向',
+              options: {
+                auto: '自动',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: '文字显示速度',
               options: {

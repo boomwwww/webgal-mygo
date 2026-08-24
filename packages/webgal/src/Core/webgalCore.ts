@@ -24,4 +24,7 @@ export class WebgalCore {
   public template: WebgalTemplate | null = null;
   public styleObjects: Map<string, IWebGALStyleObj> = new Map();
   public autoRotate = true;
+
+  public stageWidth = 2560;
+  public stageHeight = 1440;
 }

@@ -8,6 +8,7 @@
   bottom: 0;
   animation: change-img-anim 5s forwards;
   background-size: cover;
+  background-position: center;
   z-index: 14;
 }
 @keyframes change-img-anim {

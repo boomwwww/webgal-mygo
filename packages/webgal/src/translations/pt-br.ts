@@ -77,6 +77,16 @@ const ptBr = {
                 off: 'OFF',
               },
             },
+            screenRotation: {
+              title: 'Orientação da tela',
+              options: {
+                auto: 'Auto',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: 'Velocidade do texto',
               options: {

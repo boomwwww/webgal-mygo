@@ -6,7 +6,7 @@ import styles from '@/UI/Menu/Options/options.module.scss';
 import useFullScreen from '@/hooks/useFullScreen';
 import useTrans from '@/hooks/useTrans';
 import { RootState } from '@/store/store';
-import { textSize } from '@/store/userDataInterface';
+import { screenRotationOptions, textSize } from '@/store/userDataInterface';
 import { setOptionData } from '@/store/userDataReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
@@ -25,6 +25,8 @@ export function Display() {
   const currentFontIndex = fontOptions.length
     ? Math.min(userDataState.optionData.textboxFont, fontOptions.length - 1)
     : 0;
+  // 画面方向：旧存档可能没有该字段，默认取第一个（自动）
+  const currentScreenRotationIndex = Math.max(0, screenRotationOptions.indexOf(userDataState.optionData.screenRotation));
 
   return (
     <div className={styles.Options_main_content_half}>
@@ -51,6 +53,16 @@ export function Display() {
             },
           ]}
           currentChecked={userDataState.optionData.enableBangControlPanel ? 0 : 1}
+        />
+      </NormalOption>
+      <NormalOption key="screenRotation" title={t('screenRotation.title')}>
+        <NormalButton
+          textList={screenRotationOptions.map((option) => t(`screenRotation.options.${option}`))}
+          functionList={screenRotationOptions.map((option) => () => {
+            dispatch(setOptionData({ key: 'screenRotation', value: option }));
+            setStorage();
+          })}
+          currentChecked={currentScreenRotationIndex}
         />
       </NormalOption>
       <NormalOption key="textSize" title={t('textSize.title')}>

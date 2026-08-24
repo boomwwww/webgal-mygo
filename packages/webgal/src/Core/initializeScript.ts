@@ -23,7 +23,7 @@ export const isIOS = window.__WEBGAL_DEVICE_INFO__?.isIOS ?? false; // 判断是
 /**
  * 引擎初始化函数
  */
-export const initializeScript = (): void => {
+export const initializeScript = async (): Promise<void> => {
   // 打印初始log信息
   logger.info(`WebGAL v${__INFO.version}`);
   logger.info('Github: https://github.com/OpenWebGAL/WebGAL ');
@@ -54,7 +54,7 @@ export const initializeScript = (): void => {
     WebGAL.sceneManager.settledScenes.add(sceneUrl); // 放入已加载场景列表，避免递归加载相同场景
   });
   // 获取游戏信息
-  infoFetcher('./game/config.txt');
+  await infoFetcher('./game/config.txt');
   /**
    * 启动Pixi
    */

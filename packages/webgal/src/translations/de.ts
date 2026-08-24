@@ -77,6 +77,16 @@ const de = {
                 off: 'AUS',
               },
             },
+            screenRotation: {
+              title: 'Bildschirmausrichtung',
+              options: {
+                auto: 'Auto',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: 'Geschwindigkeit der Textanzeige',
               options: {

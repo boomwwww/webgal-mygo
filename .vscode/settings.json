@@ -9,5 +9,6 @@
     "rollup.config.js": "*config.js,*config.json,*rc",
     "vite.config.ts": "*config.js,*config.json,*rc,.eslint*,eslint*,.prettier*,prettier*"
   },
-  "oxc.enable": false
+  "oxc.enable": false,
+  "js/ts.tsdk.path": "node_modules\\typescript\\lib"
 }

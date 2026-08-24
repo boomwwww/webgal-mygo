@@ -77,6 +77,16 @@ const fr = {
                 off: 'OFF',
               },
             },
+            screenRotation: {
+              title: "Orientation de l'écran",
+              options: {
+                auto: 'Auto',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
+              },
+            },
             textSpeed: {
               title: "Vitesse d'affichage du texte",
               options: {

@@ -37,6 +37,7 @@ const initialOptionSet: IOptionData = {
   fullScreen: fullScreenOption.off,
   skipAll: false,
   enableBangControlPanel: true,
+  screenRotation: 'auto',
 };
 
 // 初始化用户数据
