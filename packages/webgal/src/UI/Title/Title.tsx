@@ -38,7 +38,7 @@ export default function Title() {
   const appreciationItems = useSelector((state: RootState) => state.userData.appreciationData);
   const hasAppreciationItems = appreciationItems.bgm.length > 0 || appreciationItems.cg.length > 0;
   const renderButtonText = (text: string) => (
-    <div className={applyStyle('Title_button_text', styles.Title_button_text)}>
+    <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={text}>
       {text}
       <span className={applyStyle('Title_button_text_outer', styles.Title_button_text_outer)}>{text}</span>
       <span className={applyStyle('Title_button_text_inner', styles.Title_button_text_inner)}>{text}</span>
