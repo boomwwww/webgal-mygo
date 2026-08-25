@@ -144,6 +144,9 @@ const de = {
     loadSaving: {
       title: 'LADEN',
     },
+    flowchart: {
+      title: 'ABLAUF',
+    },
     title: {
       title: 'TITEL',
     },
@@ -186,6 +189,7 @@ const de = {
       hide: 'Verstecken',
       show: 'Anzeigen',
       backlog: 'Verlauf',
+      flowchart: 'Ablauf',
       replay: 'Wiedergabe',
       auto: 'Auto',
       forward: 'Überspringen',
@@ -196,6 +200,15 @@ const de = {
       fullscrreen: 'Vollbild',
       options: 'Optionen',
       title: 'Titel',
+    },
+    flowchart: {
+      title: 'Ablauf',
+      empty: 'Kein Ablauf',
+      locked: 'Gesperrt',
+      main: 'Haupt',
+      character: 'Route',
+      root: 'Start',
+      chapter: 'Kapitel',
     },
   },
 

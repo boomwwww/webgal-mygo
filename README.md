@@ -76,7 +76,7 @@ WebGAL 是一款开源软件，因此你可以免费在 MPL-2.0 开源协议的�
 
 ## WebGAL 相关项目
 
-- [webgal-craft](https://github.com/A-kirami/webgal-craft): 社区开发中的 WebGAL 可视化编辑器。
+- [WebGAL Craft](https://github.com/A-kirami/webgal-craft): 面向 WebGAL 创作者的跨平台视觉小说工作室。
 - [Webgal_transformEditor](https://github.com/KonshinHaoshin/Webgal_transformEditor): 用于可视化编辑 `setTransform` 与 `changeFigure` 的运镜脚本工具。
 - [webgal-language-tools](https://github.com/xiaoxustudio/webgal-language-tools): 基于 Volar.js 的 WebGAL 语言工具链，提供 LSP、VS Code 扩展和 Monaco 支持。
 - [webgal-tool-l2dw](https://github.com/LostWaym/webgal-tool-l2dw): 面向 WebGAL 的 Live2D 工具，可调整模型与动作并导出相关指令。

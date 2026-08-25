@@ -23,12 +23,14 @@ export interface IStageCommitOptions {
   syncPixiStage?: boolean;
   applyPixiEffects?: boolean;
   notifyReact?: boolean;
+  skipAnimation?: boolean;
 }
 
 export interface IResolvedStageCommitOptions {
   syncPixiStage: boolean;
   applyPixiEffects: boolean;
   notifyReact: boolean;
+  skipAnimation: boolean;
 }
 
 type StageCommitHandler = (stageState: IStageState, options: IResolvedStageCommitOptions) => void;
@@ -122,17 +124,17 @@ export class StageStateManager {
     this.calculationStageState = cloneDeep(stageState);
   }
 
-  public replaceAllStageState(stageState: IStageState) {
+  public replaceAllStageState(stageState: IStageState, options?: IStageCommitOptions) {
     this.calculationStageState = cloneDeep(stageState);
-    this.commit();
+    this.commit(options);
   }
 
   public resetCalculationStageState(stageState: IStageState) {
     this.replaceCalculationStageState(stageState);
   }
 
-  public resetAllStageState(stageState: IStageState) {
-    this.replaceAllStageState(stageState);
+  public resetAllStageState(stageState: IStageState, options?: IStageCommitOptions) {
+    this.replaceAllStageState(stageState, options);
   }
 
   public updateEffect(payload: IEffect) {
@@ -344,7 +346,9 @@ export class StageStateManager {
   }
 
   public clearUncommittedNonHoldPerforms() {
-    this.calculationStageState.PerformList = this.calculationStageState.PerformList.filter((perform) => perform.isHoldOn);
+    this.calculationStageState.PerformList = this.calculationStageState.PerformList.filter(
+      (perform) => perform.isHoldOn,
+    );
   }
 
   public removeNonHoldPerformsAndCommit() {
@@ -357,6 +361,7 @@ export class StageStateManager {
       syncPixiStage: options.syncPixiStage ?? true,
       applyPixiEffects: options.applyPixiEffects ?? true,
       notifyReact: options.notifyReact ?? true,
+      skipAnimation: options.skipAnimation ?? false,
     };
     this.viewStageState = cloneDeep(this.calculationStageState);
     this.commitHandler?.(this.viewStageState, resolvedOptions);
@@ -370,6 +375,7 @@ export class StageStateManager {
       syncPixiStage: false,
       applyPixiEffects: true,
       notifyReact: false,
+      skipAnimation: false,
     });
   }
 

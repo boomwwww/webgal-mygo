@@ -1,6 +1,6 @@
 import { IPerform } from '@/Core/Modules/perform/performInterface';
 import { ISentence } from '@/Core/controller/scene/sceneInterface';
-import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
+import { continueSentence } from '@/Core/controller/gamePlay/nextSentence';
 import { WEBGAL_NONE } from '@/Core/constants';
 import { getBooleanArgByKey } from '@/Core/util/getSentenceArg';
 import { stageStateManager } from '@/Core/Modules/stage/stageStateManager';
@@ -110,15 +110,37 @@ export class PerformController {
     return this.pendingPerformList.some(({ perform }) => perform.blockingStateCalculation?.() ?? false);
   }
 
+  /**
+   * 是否存在正在运行且阻塞下一步的演出。
+   *
+   * blockingNext 是最强的运行时推进阻塞：用户 next、内部 continue 和 forward 都要等待它解除。
+   */
   public hasBlockingNextPerform() {
     return this.performList.some((e) => e.blockingNext());
   }
 
+  /**
+   * 是否存在可以被下一步提前结束的普通演出。
+   *
+   * 这不是一种阻塞。它表示当前 next/continue 需要先结算这些非 hold 演出，
+   * 让它们的 stopFunction 和状态清理完成后，再决定是否继续推进。
+   */
   public hasUnsettledNonHoldPerform() {
     return this.performList.some((e) => !e.isHoldOn && !e.skipNextCollect);
   }
 
-  public settleNonHoldPerforms() {
+  /**
+   * 结算当前正在运行的普通非 hold 演出。
+   *
+   * 用户 next 调用时，goNextWhenOver 应传 true，保留旧语义：
+   * 如果被提前结束的演出要求结束后继续，则由 perform 自己触发内部继续。
+   *
+   * 内部 continue 调用时，goNextWhenOver 应传 false：
+   * 调用方会在结算后立即继续 forward，不能再让旧 perform 额外触发一次继续。
+   *
+   * @param goNextWhenOver 是否消费被结算演出的 goNextWhenOver 标记。
+   */
+  public settleNonHoldPerforms(goNextWhenOver = true) {
     let isGoNext = false;
     for (let i = 0; i < this.performList.length; i++) {
       const e = this.performList[i];
@@ -136,8 +158,8 @@ export class PerformController {
       }
     }
     stageStateManager.commit();
-    if (isGoNext) {
-      nextSentence();
+    if (isGoNext && goNextWhenOver) {
+      continueSentence();
     }
   }
 
@@ -145,6 +167,12 @@ export class PerformController {
     stageStateManager.clearUncommittedNonHoldPerforms();
   }
 
+  /**
+   * 启动一个已提交的 perform。
+   *
+   * startFunction 只会在 commitPendingPerforms 之后运行，因此可以依赖已提交的 stage state。
+   * 这里同时把脚本层的 -continue 转成 perform.goNextWhenOver。
+   */
   private startPerform(perform: IPerform, script: ISentence) {
     perform.isStarted = true;
     perform.startFunction?.();
@@ -186,15 +214,14 @@ export class PerformController {
           this.clearPerformTimeout(e);
           /**
            * 在演出列表里删除演出对象的操作必须在调用 goNextWhenOver 之前
-           * 因为 goNextWhenOver 会调用 nextSentence，而 nextSentence 会清除目前未结束的演出
-           * 那么 nextSentence 函数就会删除这个演出，但是此时，在这个上下文，i 已经被确定了
+           * 因为 goNextWhenOver 会触发继续推进，而继续推进会清除目前未结束的演出
+           * 那么继续推进就会删除这个演出，但是此时，在这个上下文，i 已经被确定了
            * 所以 goNextWhenOver 后的代码会多删东西，解决方法就是在调用 goNextWhenOver 前先删掉这个演出对象
            * 此问题对所有 goNextWhenOver 属性为真的演出都有影响，但只有 2 个演出有此问题
            */
           this.performList.splice(i, 1);
           i--;
           if (e.goNextWhenOver) {
-            // nextSentence();
             this.goNextWhenOver();
           }
           this.erasePerformFromState(name);
@@ -212,7 +239,6 @@ export class PerformController {
           this.performList.splice(i, 1);
           i--;
           if (e.goNextWhenOver) {
-            // nextSentence();
             this.goNextWhenOver();
           }
           /**
@@ -259,8 +285,8 @@ export class PerformController {
     this.clearPerformTimeout(perform);
     /**
      * 在演出列表里删除演出对象的操作必须在调用 goNextWhenOver 之前
-     * 因为 goNextWhenOver 会调用 nextSentence，而 nextSentence 会清除目前未结束的演出
-     * 那么 nextSentence 函数就会删除这个演出，但是此时，在这个上下文，i 已经被确定了
+     * 因为 goNextWhenOver 会触发继续推进，而继续推进会清除目前未结束的演出
+     * 那么继续推进就会删除这个演出，但是此时，在这个上下文，i 已经被确定了
      * 所以 goNextWhenOver 后的代码会多删东西，解决方法就是在调用 goNextWhenOver 前先删掉这个演出对象
      * 此问题对所有 goNextWhenOver 属性为真的演出都有影响，但只有 2 个演出有此问题
      */
@@ -268,7 +294,6 @@ export class PerformController {
     this.erasePerformFromState(perform.performName);
     stageStateManager.commit();
     if (perform.goNextWhenOver) {
-      // nextSentence();
       this.goNextWhenOver();
     }
   }
@@ -300,6 +325,12 @@ export class PerformController {
     perform.isStarted = false;
   }
 
+  /**
+   * perform 结束后的内部继续推进。
+   *
+   * goNextWhenOver 不等于无条件跳下一句；它仍然必须等待所有 blockingNext 演出结束。
+   * 等待完成后使用 continueSentence，避免触发 userInteractNext，也避免把自然结束误当成用户点击。
+   */
   private goNextWhenOver = () => {
     let isBlockingNext = false;
     this.performList?.forEach((e) => {
@@ -311,7 +342,7 @@ export class PerformController {
       // 有阻塞，提前结束
       setTimeout(this.goNextWhenOver, 100);
     } else {
-      nextSentence();
+      continueSentence();
     }
   };
 }

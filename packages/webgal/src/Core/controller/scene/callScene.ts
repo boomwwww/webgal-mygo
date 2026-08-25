@@ -1,7 +1,7 @@
 import { sceneFetcher } from './sceneFetcher';
 import { sceneParser } from '../../parser/sceneParser';
 import { logger } from '../../util/logger';
-import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
+import { continueSentence } from '@/Core/controller/gamePlay/nextSentence';
 import { clearPrefetchLinks } from '@/Core/util/prefetcher/assetsPrefetcher';
 
 import { WebGAL } from '@/Core/WebGAL';
@@ -31,6 +31,7 @@ export const callScene = (sceneUrl: string, sceneName: string) => {
       WebGAL.sceneManager.sceneData.currentSentenceId = 0;
       clearPrefetchLinks();
       WebGAL.sceneManager.settledScenes.add(sceneUrl); // 放入已加载场景列表，避免递归加载相同场景
+      WebGAL.flowchartManager.waitForCurrentSceneDialog();
       logger.debug('现在调用场景，调用结果：', WebGAL.sceneManager.sceneData);
       shouldAutoNext = !isFastPreviewSceneWrite;
     })
@@ -43,7 +44,8 @@ export const callScene = (sceneUrl: string, sceneName: string) => {
         WebGAL.sceneManager.sceneWritePromise = null;
       }
       if (shouldAutoNext) {
-        nextSentence();
+        // 场景写入完成后的第一句推进是内核流程，不应触发用户 next 语义。
+        continueSentence();
       }
     });
   WebGAL.sceneManager.sceneWritePromise = sceneWritePromise;

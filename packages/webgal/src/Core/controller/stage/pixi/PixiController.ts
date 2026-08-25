@@ -15,6 +15,8 @@ import { INSTALLED } from 'pixi.js';
 import { GifResource } from './GifResource';
 import { stageStateManager } from '@/Core/Modules/stage/stageStateManager';
 import { AnimatedGIF } from '@pixi/gif';
+import { queryStageObjectReferenceBox, type QueryTargetReferenceBoxResult } from './referenceBox';
+import { assignPixiTransform } from './stageEffectTransform';
 
 export interface IAnimationObject {
   setStartState: Function;
@@ -87,21 +89,7 @@ INSTALLED.push(GifResource);
 
 export default class PixiStage {
   public static assignTransform<T extends ITransform>(target: T, source?: ITransform, convertAlpha = true) {
-    if (!source) return;
-    const targetScale = target.scale;
-    const targetPosition = target.position;
-    if (target.scale) Object.assign(targetScale!, omitBy(source.scale || {}, isUndefined));
-    if (target.position) Object.assign(targetPosition!, omitBy(source.position || {}, isUndefined));
-    Object.assign(target, omitBy(source, isUndefined));
-    target.scale = targetScale;
-    target.position = targetPosition;
-    if (convertAlpha) {
-      const sourceAlpha = source.alpha;
-      if (sourceAlpha !== undefined) {
-        target.alpha = 1;
-        (target as any).alphaFilterVal = sourceAlpha;
-      }
-    }
+    assignPixiTransform(target, source, convertAlpha);
   }
 
   /**
@@ -140,6 +128,7 @@ export default class PixiStage {
   private isRenderPending = false;
   // 更新 ticker 状态的防抖标记
   private isTickerUpdatePending = false;
+  private referenceBoxWaiters = new Map<string, Set<() => void>>();
 
   /**
    * 暂时没用上，以后可能用
@@ -607,7 +596,6 @@ export default class PixiStage {
       sourceType: sourceExt === 'gif' ? 'gif' : 'img',
       sourceExt,
     });
-
     // 完成图片加载后执行的函数
     const setup = () => {
       // TODO：找一个更好的解法，现在的解法是无论是否复用原来的资源，都设置一个延时以让动画工作正常！
@@ -1258,6 +1246,7 @@ export default class PixiStage {
                   instance.setModelMouthY(key, currentMouthValue);
                 }
               });
+              instance.notifyTargetReferenceBoxChanged(key);
             });
           })();
         }
@@ -1491,6 +1480,36 @@ export default class PixiStage {
     return [...this.figureObjects, ...this.backgroundObjects, this.mainStageObject].find((e) => e.key === key);
   }
 
+  public queryTargetReferenceBox(target: string): QueryTargetReferenceBoxResult {
+    return queryStageObjectReferenceBox(target, this.getStageObjByKey(target), {
+      width: this.stageWidth,
+      height: this.stageHeight,
+    });
+  }
+
+  public waitForTargetReferenceBox(target: string, timeoutMs: number): Promise<void> {
+    return new Promise((resolve) => {
+      const existingWaiters = this.referenceBoxWaiters.get(target);
+      const waiters = existingWaiters ?? new Set<() => void>();
+      if (!existingWaiters) {
+        this.referenceBoxWaiters.set(target, waiters);
+      }
+
+      let timeoutId = 0;
+      const resolveAndCleanup = () => {
+        window.clearTimeout(timeoutId);
+        waiters.delete(resolveAndCleanup);
+        if (waiters.size === 0) {
+          this.referenceBoxWaiters.delete(target);
+        }
+        resolve();
+      };
+
+      timeoutId = window.setTimeout(resolveAndCleanup, timeoutMs);
+      waiters.add(resolveAndCleanup);
+    });
+  }
+
   public getStageObjByUuid(objUuid: string) {
     return [...this.figureObjects, ...this.backgroundObjects, this.mainStageObject].find((e) => e.uuid === objUuid);
   }
@@ -1518,6 +1537,7 @@ export default class PixiStage {
       }
       bgSprite.pixiContainer = null;
       this.figureObjects.splice(indexFig, 1);
+      this.notifyTargetReferenceBoxChanged(key);
     }
     if (indexBg >= 0) {
       const bgSprite = this.backgroundObjects[indexBg];
@@ -1531,6 +1551,7 @@ export default class PixiStage {
       }
       bgSprite.pixiContainer = null;
       this.backgroundObjects.splice(indexBg, 1);
+      this.notifyTargetReferenceBoxChanged(key);
     }
     // /**
     //  * 删掉相关 Effects，因为已经移除了
@@ -1600,6 +1621,17 @@ export default class PixiStage {
       this.live2dFigureRecorder[figureTargetIndex].focus = focus;
     } else {
       this.live2dFigureRecorder.push({ target, motion: '', expression: '', blink: baseBlinkParam, focus });
+    }
+  }
+
+  public notifyTargetReferenceBoxChanged(target: string): void {
+    const waiters = this.referenceBoxWaiters.get(target);
+    if (!waiters) {
+      return;
+    }
+
+    for (const resolve of [...waiters]) {
+      resolve();
     }
   }
 

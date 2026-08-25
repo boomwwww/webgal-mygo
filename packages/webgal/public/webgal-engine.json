@@ -4,8 +4,14 @@
   "name": "WebGAL MyGO",
   "version": "3.2.0",
   "type": "custom",
-  "webgalVersion": "4.6.1",
+  "webgalVersion": "4.6.2",
   "description": "MyGO专版引擎",
+  "descriptions": {
+    "en": "A brand new web Visual Novel engine with a beautiful interface, powerful features, and easy development",
+    "ja": "美しいインターフェース、強力な機能、簡単な開発を備えた全く新しいウェブビジュアルノベルエンジン",
+    "ko": "시각적으로 매력적이며, 기능이 풍부하고, 쉽게 개발할 수 있는 새로운 웹 기반 비주얼 노벨 엔진",
+    "fr": "Un moteur de visual novel basé sur le web, attrayant visuellement, riche en fonctionnalités et facile à développer"
+  },
   "maintainer": "WebGAL MyGO Team",
   "license": "MPL-2.0",
   "icon": "icons/icon-512.png",
