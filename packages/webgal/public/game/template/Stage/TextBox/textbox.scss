@@ -63,6 +63,10 @@
   }
 }
 
+.TextBox_main_miniavatarOff {
+  left: 0;
+}
+
 .TextBox_Background {
   z-index: 2;
   background: rgba(255, 255, 255, 0.8);
@@ -251,6 +255,9 @@
   position: absolute;
   left: 0;
   top: 0;
+  -webkit-text-stroke: 0.12em #2e2312;
+  text-shadow: 0.05em 0.05em 0.02em rgba(0, 0, 0, 0.85),
+    0.05em 0.05em 0.03em rgba(0, 0, 0, 0.5);
   z-index: 1;
   color: transparent;
   -webkit-text-stroke: 6px #ff3b72;
@@ -281,4 +288,17 @@
   100% {
     opacity: 1;
   }
+}
+
+.readText {
+}
+
+.readTextOuter {
+  background-image: none;
+  background-clip: border-box;
+  -webkit-background-clip: border-box;
+  color: #C0C0C0;
+}
+
+.readTextInner {
 }

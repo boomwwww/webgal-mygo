@@ -5,6 +5,7 @@ Title_bgm: s_Title.mp3;
 Game_Logo: WebGalEnter.webp;
 Enable_Appreciation: true;
 Enable_Continue: true;
+Enable_flowchart: true;
 Show_panic: true;
 Default_Language: zh_CN;
 Legacy_Expression_Blend_Mode: true;

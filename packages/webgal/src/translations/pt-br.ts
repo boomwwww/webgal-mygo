@@ -77,16 +77,6 @@ const ptBr = {
                 off: 'OFF',
               },
             },
-            screenRotation: {
-              title: 'Orientação da tela',
-              options: {
-                auto: 'Auto',
-                angle0: '0°',
-                angle90: '90°',
-                angle180: '180°',
-                angle270: '270°',
-              },
-            },
             textSpeed: {
               title: 'Velocidade do texto',
               options: {
@@ -144,6 +134,9 @@ const ptBr = {
     loadSaving: {
       title: 'CARREGAR',
     },
+    flowchart: {
+      title: 'FLUXO',
+    },
     title: {
       title: 'TÍTULO',
     },
@@ -186,6 +179,7 @@ const ptBr = {
       hide: 'Esconder',
       show: 'Exibir',
       backlog: 'Histórico',
+      flowchart: 'Fluxo',
       replay: 'Repetir',
       auto: 'Auto',
       forward: 'Avançar',
@@ -197,6 +191,15 @@ const ptBr = {
       options: 'Opções',
       title: 'Título',
       titleTips: 'Confirma o retorno para a tela de título',
+    },
+    flowchart: {
+      title: 'Fluxo',
+      empty: 'Nenhum fluxo',
+      locked: 'Bloqueado',
+      main: 'Principal',
+      character: 'Rota',
+      root: 'Início',
+      chapter: 'Capítulo',
     },
   },
 

@@ -144,6 +144,9 @@ const fr = {
     loadSaving: {
       title: 'CHARGER',
     },
+    flowchart: {
+      title: 'PARCOURS',
+    },
     title: {
       title: 'TITRE',
     },
@@ -186,6 +189,7 @@ const fr = {
       hide: 'Masquer',
       show: 'Afficher',
       backlog: 'Journal',
+      flowchart: 'Parcours',
       replay: 'Rejouer',
       auto: 'Automatique',
       forward: 'Avancer',
@@ -197,6 +201,15 @@ const fr = {
       options: 'Options',
       title: 'Titre',
       titleTips: "Confirmer le retour à l'écran titre ?",
+    },
+    flowchart: {
+      title: 'Parcours',
+      empty: 'Aucun parcours',
+      locked: 'Verrouillé',
+      main: 'Principal',
+      character: 'Route',
+      root: 'Début',
+      chapter: 'Chapitre',
     },
   },
 
