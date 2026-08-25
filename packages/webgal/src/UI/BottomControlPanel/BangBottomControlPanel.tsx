@@ -104,7 +104,7 @@ export function BangBottomControlPanel() {
       className={styles.main}
       style={{
         visibility: GUIStore.controlsVisibility ? 'visible' : 'hidden',
-        width: isFolded.value ? '320px' : '2020px',
+        width: isFolded.value ? '320px' : '2200px',
       }}
     >
       <div className={styles.background}>
