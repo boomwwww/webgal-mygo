@@ -6,7 +6,7 @@ import styles from '@/UI/Menu/Options/options.module.scss';
 import useFullScreen from '@/hooks/useFullScreen';
 import useTrans from '@/hooks/useTrans';
 import { RootState } from '@/store/store';
-import { textSize } from '@/store/userDataInterface';
+import { screenRotationOptions, textSize } from '@/store/userDataInterface';
 import { setOptionData } from '@/store/userDataReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
@@ -25,6 +25,8 @@ export function Display() {
   const currentFontIndex = fontOptions.length
     ? Math.min(userDataState.optionData.textboxFont, fontOptions.length - 1)
     : 0;
+  // 画面方向：旧存档可能没有该字段，默认取第一个（自动）
+  const currentScreenRotationIndex = Math.max(0, screenRotationOptions.indexOf(userDataState.optionData.screenRotation));
 
   return (
     <div className={styles.Options_main_content_half}>
@@ -53,6 +55,16 @@ export function Display() {
           currentChecked={userDataState.optionData.enableBangControlPanel ? 0 : 1}
         />
       </NormalOption>
+      <NormalOption key="screenRotation" title={t('screenRotation.title')}>
+        <NormalButton
+          textList={screenRotationOptions.map((option) => t(`screenRotation.options.${option}`))}
+          functionList={screenRotationOptions.map((option) => () => {
+            dispatch(setOptionData({ key: 'screenRotation', value: option }));
+            setStorage();
+          })}
+          currentChecked={currentScreenRotationIndex}
+        />
+      </NormalOption>
       <NormalOption key="textSize" title={t('textSize.title')}>
         <NormalButton
           textList={t('textSize.options.small', 'textSize.options.medium', 'textSize.options.large')}
@@ -73,7 +85,7 @@ export function Display() {
           currentChecked={userDataState.optionData.textSize}
         />
       </NormalOption>
-      {/* <NormalOption key="textFont" title={t('textFont.title')}>
+      <NormalOption key="textFont" title={t('textFont.title')}>
         <NormalButton
           textList={fontOptionTexts}
           functionList={fontOptions.map((_, index) => () => {
@@ -82,7 +94,7 @@ export function Display() {
           })}
           currentChecked={currentFontIndex}
         />
-      </NormalOption> */}
+      </NormalOption>
       <NormalOption key="textSpeed" title={t('textSpeed.title')}>
         <CustomSlider
           value={userDataState.optionData.textSpeed}
@@ -92,17 +104,15 @@ export function Display() {
           }}
         />
       </NormalOption>
-      {/* <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.textboxOpacity}
-          uniqueID={t('textboxOpacity.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'textboxOpacity', value: Number(newValue) }));
+      <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
+        <CustomSlider
+          value={userDataState.optionData.textboxOpacity}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'textboxOpacity', value: newValue }));
             setStorage();
           }}
         />
-      </NormalOption> */}
+      </NormalOption>
       <NormalOption full key="textPreview" title={t('textPreview.title')}>
         {/* 这是一个临时的组件，用于模拟文本预览的效果 */}
         <TextPreview />

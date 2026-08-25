@@ -58,6 +58,13 @@ const fr = {
               contributors: 'Contributeurs',
               website: 'Site web',
             },
+            skipAll: {
+              title: 'Mode Avance Rapide',
+              options: {
+                read: 'Lu',
+                all: 'Tout',
+              }
+            }
           },
         },
         display: {
@@ -68,6 +75,16 @@ const fr = {
               options: {
                 on: 'ON',
                 off: 'OFF',
+              },
+            },
+            screenRotation: {
+              title: "Orientation de l'écran",
+              options: {
+                auto: 'Auto',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
               },
             },
             textSpeed: {
@@ -89,9 +106,9 @@ const fr = {
             textFont: {
               title: 'Police du texte',
               options: {
+                resourceHanRounded: 'Resource Han Rounded',
                 siYuanSimSun: 'Source Han Serif',
                 SimHei: 'Sans',
-                lxgw: 'LXGW WenKai',
               },
             },
             textboxOpacity: {

@@ -18,7 +18,7 @@ import {
 } from '@/store/userDataInterface';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash/cloneDeep';
-import { ISetGameVar } from './stageInterface';
+import { ISetGameVar } from '@/Core/Modules/stage/stageInterface';
 
 const initialOptionSet: IOptionData = {
   slPage: 1,
@@ -31,11 +31,13 @@ const initialOptionSet: IOptionData = {
   seVolume: 100, // 音效音量
   uiSeVolume: 50, // UI音效音量
   textboxFont: 0,
-  textboxOpacity: 75,
+  textboxOpacity: 100,
   language: language.zhCn,
-  voiceInterruption: voiceOption.yes,
+  voiceInterruption: voiceOption.no,
   fullScreen: fullScreenOption.off,
+  skipAll: false,
   enableBangControlPanel: true,
+  screenRotation: 'auto',
 };
 
 // 初始化用户数据
@@ -48,6 +50,7 @@ export const initState: IUserData = {
     cg: [],
   },
   gameConfigInit: {},
+  readHistory: {},
 };
 
 const userDataSlice = createSlice({
@@ -64,7 +67,7 @@ const userDataSlice = createSlice({
       state[key] = value;
     },
     unlockCgInUserData: (state, action: PayloadAction<IAppreciationAsset>) => {
-      const { name, url, series } = action.payload;
+      const { name, url, series, order } = action.payload;
       // 检查是否存在
       let isExist = false;
       state.appreciationData.cg.forEach((e) => {
@@ -72,6 +75,7 @@ const userDataSlice = createSlice({
           isExist = true;
           e.name = name;
           e.series = series;
+          e.order = order;
         }
       });
       if (!isExist) {
@@ -143,6 +147,9 @@ const userDataSlice = createSlice({
       const { gameConfigInit } = state;
       Object.assign(state, { ...cloneDeep(initState), globalGameVar: cloneDeep(gameConfigInit), gameConfigInit });
     },
+    setReadHistory: (state, action: PayloadAction<Record<'key' | 'value', string>>) => {
+      state.readHistory[action.payload.key] = action.payload.value;
+    },
   },
 });
 
@@ -157,6 +164,7 @@ export const {
   unlockBgmInUserData,
   resetOptionSet,
   resetAllData,
+  setReadHistory,
 } = userDataSlice.actions;
 export default userDataSlice.reducer;
 

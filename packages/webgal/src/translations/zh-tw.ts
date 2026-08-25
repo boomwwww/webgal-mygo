@@ -58,6 +58,13 @@ const zhTw = {
               contributors: '貢獻者',
               website: '網站',
             },
+            skipAll: {
+              title: '快進模式',
+              options: {
+                read: '已讀',
+                all: '全部',
+              }
+            }
           },
         },
         display: {
@@ -75,6 +82,16 @@ const zhTw = {
               options: {
                 on: '開啟',
                 off: '關閉',
+              },
+            },
+            screenRotation: {
+              title: '畫面方向',
+              options: {
+                auto: '自動',
+                angle0: '0°',
+                angle90: '90°',
+                angle180: '180°',
+                angle270: '270°',
               },
             },
             textSpeed: {
@@ -96,9 +113,9 @@ const zhTw = {
             textFont: {
               title: '文字字體',
               options: {
+                resourceHanRounded: '資源圓體',
                 siYuanSimSun: '思源宋體',
                 SimHei: '黑體',
-                lxgw: '霞鶩文楷',
               },
             },
             textboxOpacity: {
