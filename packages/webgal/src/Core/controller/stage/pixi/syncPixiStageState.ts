@@ -248,11 +248,17 @@ function addFigure(key: string, url: string, position: 'left' | 'center' | 'righ
   if (!pixiStage) return;
   const baseUrl = window.location.origin;
   const urlObject = new URL(url, baseUrl);
-  const figureType = urlObject.searchParams.get('type') as 'image' | 'live2D' | 'spine' | null;
+  const figureType = urlObject.searchParams.get('type') as 'image' | 'live2D' | 'spine' | 'video' | null;
   if (url.endsWith('.json')) {
     pixiStage.addLive2dFigure(key, url, position);
+  } else if (url.endsWith('.wmdl')) {
+    pixiStage.addWmdlFigure(key, url, position);
+  } else if (url.endsWith('.jsonl')) {
+    pixiStage.addJsonlFigure(key, url, position);
   } else if (url.endsWith('.skel') || figureType === 'spine') {
     pixiStage.addSpineFigure(key, url, position);
+  } else if (url.endsWith('.webm') || url.endsWith('.mov') || url.endsWith('.mp4') || figureType === 'video') {
+    pixiStage.addVideoFigure(key, url, position);
   } else {
     pixiStage.addFigure(key, url, position);
   }
