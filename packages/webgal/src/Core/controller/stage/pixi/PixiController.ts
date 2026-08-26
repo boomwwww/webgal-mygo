@@ -14,7 +14,6 @@ import * as PIXI from 'pixi.js';
 import { INSTALLED } from 'pixi.js';
 import { GifResource } from './GifResource';
 import { stageStateManager } from '@/Core/Modules/stage/stageStateManager';
-import { AnimatedGIF } from '@pixi/gif';
 import { queryStageObjectReferenceBox, type QueryTargetReferenceBoxResult } from './referenceBox';
 import { assignPixiTransform } from './stageEffectTransform';
 
@@ -630,54 +629,6 @@ export default class PixiStage {
     }
   }
 
-  // 播放gif
-  public async addGifFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
-    const thisFigureContainer = new WebGALPixiContainer();
-
-    // 移除已有相同 key 的立绘
-    const existingIndex = this.figureObjects.findIndex((e) => e.key === key);
-    if (existingIndex >= 0) {
-      this.removeStageObjectByKey(key);
-    }
-
-    this.applyFigureMetadata(thisFigureContainer, key);
-
-    // 添加容器到舞台
-    this.figureContainer.addChild(thisFigureContainer);
-
-    // 注册到立绘对象列表
-    const figureUuid = uuid();
-    this.figureObjects.push({
-      uuid: figureUuid,
-      key,
-      pixiContainer: thisFigureContainer,
-      sourceUrl: url,
-      sourceType: 'gif',
-      sourceExt: 'gif',
-    });
-
-    try {
-      // ✅ 使用 fetch 异步加载 buffer
-      const buffer = await fetch(url).then((res) => res.arrayBuffer());
-
-      // ✅ 使用 AnimatedGIF.fromBuffer 异步解码
-      const gif = await AnimatedGIF.fromBuffer(buffer);
-
-      this.setContainerInitialPosition({
-        container: thisFigureContainer,
-        childContainer: gif,
-        originalWidth: gif.width,
-        originalHeight: gif.height,
-        position: presetPosition,
-        isLive2DFigure: false,
-      });
-
-      // ✅ 播放动画 + 添加到容器
-      gif.play();
-    } catch (e) {
-      console.error('GIF 加载失败', e);
-    }
-  }
   // 聚合模型
   /* eslint-disable complexity */
   public async addJsonlFigure(key: string, jsonlPath: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
