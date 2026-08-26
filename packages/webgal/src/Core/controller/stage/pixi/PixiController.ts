@@ -1437,7 +1437,7 @@ export default class PixiStage {
 
   public setModelMouthY(key: string, y: number) {
     function mapToZeroOne(value: number) {
-      return value < 50 ? 0 : (value - 50) / 50;
+      return value < 50 ? 0 : Math.min(1, (value - 50) / 50);
     }
 
     const paramY = mapToZeroOne(y);
@@ -1470,6 +1470,32 @@ export default class PixiStage {
    */
   public getCurrentMouthValue(key: string): number | null {
     return this.currentMouthValues.get(key) ?? null;
+  }
+
+  /**
+   * Reset the stored mouth value and hand mouth control back to the model motion/expression.
+   * Called when a vocal ends so the figure's normal animations can drive the mouth again.
+   * @param key character key
+   */
+  public resetMouthY(key: string) {
+    // Clear the stored mouth value so beforeModelUpdate stops overriding the motion
+    this.currentMouthValues.delete(key);
+    const target = this.figureObjects.find((e) => e.key === key);
+    if (target && target.sourceType === 'live2d') {
+      const container = target.pixiContainer;
+      if (!container) return;
+      const children = container.children;
+      for (const model of children) {
+        // @ts-ignore
+        if (model?.internalModel?.coreModel?.setParamFloat)
+          // @ts-ignore
+          model?.internalModel?.coreModel?.setParamFloat?.('PARAM_MOUTH_OPEN_Y', 0);
+        // @ts-ignore
+        if (model?.internalModel?.coreModel?.setParameterValueById)
+          // @ts-ignore
+          model?.internalModel?.coreModel?.setParameterValueById('ParamMouthOpenY', 0);
+      }
+    }
   }
 
   /**

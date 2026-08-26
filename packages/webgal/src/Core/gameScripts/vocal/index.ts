@@ -9,7 +9,7 @@ import {
   performBlinkAnimation,
   performMouthAnimation,
   resetMaxAudioLevel,
-  updateThresholds,
+  updateMaxAudioLevel,
 } from '@/Core/gameScripts/vocal/vocalAnimation';
 import { WebGAL } from '@/Core/WebGAL';
 import { stageStateManager } from '@/Core/Modules/stage/stageStateManager';
@@ -40,8 +40,6 @@ export const playVocal = (sentence: ISentence) => {
   const freeFigure = currentStageState.freeFigure;
   const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
   let bufferLength = 0;
-  let currentMouthValue = 0;
-  const lerpSpeed = 1;
 
   // 先停止之前的语音
   WebGAL.gameplay.performController.unmountPerform('vocal-play', true);
@@ -95,6 +93,8 @@ export const playVocal = (sentence: ISentence) => {
             if (!audioContextWrapper.analyser) {
               audioContextWrapper.analyser = audioContextWrapper.audioContext.createAnalyser();
               audioContextWrapper.analyser.fftSize = 256;
+              // Keep the analyser responsive; the envelope in performMouthAnimation shapes the mouth
+              audioContextWrapper.analyser.smoothingTimeConstant = 0.4;
             }
 
             bufferLength = audioContextWrapper.analyser.frequencyBinCount;
@@ -118,14 +118,10 @@ export const playVocal = (sentence: ISentence) => {
                 audioContextWrapper.dataArray!,
                 bufferLength,
               );
-              const { OPEN_THRESHOLD, HALF_OPEN_THRESHOLD } = updateThresholds(audioLevel);
+              updateMaxAudioLevel(audioLevel);
 
               performMouthAnimation({
                 audioLevel,
-                OPEN_THRESHOLD,
-                HALF_OPEN_THRESHOLD,
-                currentMouthValue,
-                lerpSpeed,
                 key,
                 animationItem,
                 pos,
@@ -161,16 +157,12 @@ export const playVocal = (sentence: ISentence) => {
       }
       key = key ? key : `fig-${pos}`;
       const animationItem = figureAssociatedAnimation.find((tid) => tid.targetId === key);
-      performMouthAnimation({
-        audioLevel: 0,
-        OPEN_THRESHOLD: 1,
-        HALF_OPEN_THRESHOLD: 1,
-        currentMouthValue,
-        lerpSpeed,
-        key,
-        animationItem,
-        pos,
-      });
+      // Hand the mouth control back to the model motion/expression logic after the vocal ends
+      WebGAL.gameplay.pixiStage?.resetMouthY(key);
+      // Texture figures: restore the mouth texture to its natural closed state
+      if (animationItem) {
+        WebGAL.gameplay.pixiStage?.performMouthSyncAnimation(key, animationItem, 'closed', pos);
+      }
       clearTimeout(audioContextWrapper.blinkTimerID);
     },
     blockingNext: () => false,
