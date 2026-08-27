@@ -3,8 +3,8 @@ name: Deploy WebGAL Demo Page
 on:
   push:
     branches:
-      - main
-      
+      - never-match-this-branch-name
+
 # 任务
 jobs:
   build-webgal-static-webpage :
@@ -21,7 +21,7 @@ jobs:
         with:
           node-version-file: package.json
           cache: 'yarn'
-          
+
       # 安装依赖
       - name: Install
         run: npm install yarn -g && yarn install

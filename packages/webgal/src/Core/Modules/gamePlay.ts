@@ -1,6 +1,5 @@
 import PixiStage from '@/Core/controller/stage/pixi/PixiController';
 import { PerformController } from '@/Core/Modules/perform/performController';
-import { webgalStore } from '@/store/store';
 import { setFastButton } from '../controller/gamePlay/fastSkip';
 import { setAutoButton } from '../controller/gamePlay/autoPlay';
 

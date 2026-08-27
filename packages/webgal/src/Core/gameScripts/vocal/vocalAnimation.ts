@@ -8,6 +8,7 @@ interface IAudioContextWrapper {
   audioLevelInterval: ReturnType<typeof setInterval>;
   blinkTimerID: ReturnType<typeof setTimeout>;
   maxAudioLevel: number;
+  smoothedMouthValue: number;
 }
 
 // Initialize the object based on the interface
@@ -19,6 +20,7 @@ export const audioContextWrapper: IAudioContextWrapper = {
   audioLevelInterval: setInterval(() => {}, 0), // dummy interval
   blinkTimerID: setTimeout(() => {}, 0), // dummy timeout
   maxAudioLevel: 0,
+  smoothedMouthValue: 0,
 };
 
 export const ensureAudioContextReady = async (): Promise<boolean> => {
@@ -47,14 +49,13 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
 
 export const resetMaxAudioLevel = () => {
   audioContextWrapper.maxAudioLevel = 0;
+  audioContextWrapper.smoothedMouthValue = 0;
 };
 
-export const updateThresholds = (audioLevel: number) => {
-  audioContextWrapper.maxAudioLevel = Math.max(audioLevel, audioContextWrapper.maxAudioLevel);
-  return {
-    OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.75,
-    HALF_OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.5,
-  };
+export const updateMaxAudioLevel = (audioLevel: number) => {
+  // Dynamic peak with exponential decay so the mouth keeps moving through a long vocal.
+  // A small floor avoids over-amplifying very quiet audio.
+  audioContextWrapper.maxAudioLevel = Math.max(audioLevel, audioContextWrapper.maxAudioLevel * 0.985, 15);
 };
 
 export const performBlinkAnimation = (params: {
@@ -79,49 +80,53 @@ export const performBlinkAnimation = (params: {
   blink();
 };
 
-// Updated getAudioLevel function
+// Extract speech energy from the low/mid frequency bins only.
+// Averaging every bin dilutes the signal with high-frequency noise.
 export const getAudioLevel = (
   analyser: AnalyserNode,
   dataArray: Uint8Array,
   bufferLength: number,
 ): number => {
   analyser.getByteFrequencyData(dataArray as any);
+  const usedBins = Math.max(8, Math.floor(bufferLength / 4));
   let sum = 0;
-  for (let i = 0; i < bufferLength; i++) {
+  for (let i = 0; i < usedBins; i++) {
     sum += dataArray[i];
   }
-  return sum / bufferLength;
+  return sum / usedBins;
 };
+
+// Below this level the vocal is treated as silence
+const NOISE_GATE = 4;
 
 export const performMouthAnimation = (params: {
   audioLevel: number;
-  OPEN_THRESHOLD: number;
-  HALF_OPEN_THRESHOLD: number;
-  currentMouthValue: number;
-  lerpSpeed: number;
   key: string;
   animationItem: any;
   pos: string;
 }) => {
-  const { audioLevel, OPEN_THRESHOLD, HALF_OPEN_THRESHOLD, currentMouthValue, lerpSpeed, key, animationItem, pos } =
-    params;
+  const { audioLevel, key, animationItem, pos } = params;
 
-  let targetValue;
-  if (audioLevel > OPEN_THRESHOLD) {
-    targetValue = 1; // open
-  } else if (audioLevel > HALF_OPEN_THRESHOLD) {
-    targetValue = 0.5; // half_open
-  } else {
-    targetValue = 0; // closed
-  }
-  // Lerp
-  const mouthValue = currentMouthValue + (targetValue - currentMouthValue) * lerpSpeed;
-  WebGAL.gameplay.pixiStage?.setModelMouthY(key, audioLevel);
+  // Normalize with the dynamic peak (AGC) so quiet and loud voices both animate well.
+  // Silence is gated so the mouth stays closed.
+  const maxLevel = Math.max(audioContextWrapper.maxAudioLevel, 1);
+  const normalizedRaw = audioLevel <= NOISE_GATE ? 0 : Math.min(1, audioLevel / maxLevel);
+
+  // One-pole envelope: fast attack when opening, slower release when closing.
+  const ATTACK = 0.55;
+  const RELEASE = 0.3;
+  const alpha = normalizedRaw > audioContextWrapper.smoothedMouthValue ? ATTACK : RELEASE;
+  audioContextWrapper.smoothedMouthValue += (normalizedRaw - audioContextWrapper.smoothedMouthValue) * alpha;
+  const mouthValue = audioContextWrapper.smoothedMouthValue;
+
+  // Map to the 50-100 scale setModelMouthY expects, so the Live2D mouth param is continuous.
+  const mouthAudioLevel = 50 + mouthValue * 50;
+  WebGAL.gameplay.pixiStage?.setModelMouthY(key, mouthAudioLevel);
 
   let mouthState;
   if (mouthValue > 0.75) {
     mouthState = 'open';
-  } else if (mouthValue > 0.25) {
+  } else if (mouthValue > 0.5) {
     mouthState = 'half_open';
   } else {
     mouthState = 'closed';

@@ -3,7 +3,7 @@ name: Release WebGAL Beta
 on:
   push:
     tags:
-      - '*beta*'
+      - 'never-match-this-tag'
 
 permissions:
   contents: write

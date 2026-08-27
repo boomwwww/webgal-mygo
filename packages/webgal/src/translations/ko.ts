@@ -77,16 +77,6 @@ const ko = {
                 off: '끄기',
               },
             },
-            screenRotation: {
-              title: '화면 방향',
-              options: {
-                auto: '자동',
-                angle0: '0°',
-                angle90: '90°',
-                angle180: '180°',
-                angle270: '270°',
-              },
-            },
             textSpeed: {
               title: '텍스트 표시 속도',
               options: {
@@ -147,6 +137,9 @@ const ko = {
     loadSaving: {
       title: '불러오기',
     },
+    flowchart: {
+      title: '플로차트',
+    },
     title: {
       title: '타이틀',
       options: {
@@ -193,6 +186,7 @@ const ko = {
       hide: '숨김',
       show: '표시',
       backlog: '백로그',
+      flowchart: '플로차트',
       replay: '다시 재생',
       auto: '자동 재생',
       forward: '빠른 재생',
@@ -204,6 +198,15 @@ const ko = {
       options: '옵션',
       title: '메인 화면',
       titleTips: '메인 화면으로 돌아가시겠습니까?',
+    },
+    flowchart: {
+      title: '플로차트',
+      empty: '플로차트 없음',
+      locked: '잠김',
+      main: '메인',
+      character: '루트',
+      root: '시작',
+      chapter: '챕터',
     },
   },
 

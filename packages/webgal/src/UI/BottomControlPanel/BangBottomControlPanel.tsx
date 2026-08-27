@@ -27,6 +27,7 @@ import {
   ReplayMusic,
   Save,
   SettingTwo,
+  TreeDiagram,
   Unlock,
   LeftTwo,
   RightTwo,
@@ -57,6 +58,7 @@ export function BangBottomControlPanel() {
   }
   const { isSupported: isFullscreenSupport, isFullScreen, toggle: toggleFullscreen } = useFullScreen();
   const GUIStore = useSelector((state: RootState) => state.GUI);
+  const enableFlowchart = useSelector((state: RootState) => state.userData.globalGameVar.Enable_flowchart === true);
   const stageState = useStageState();
   const dispatch = useDispatch();
   const setComponentVisibility = (component: keyof componentsVisibility, visibility: boolean) => {
@@ -102,7 +104,7 @@ export function BangBottomControlPanel() {
       className={styles.main}
       style={{
         visibility: GUIStore.controlsVisibility ? 'visible' : 'hidden',
-        width: isFolded.value ? '320px' : '2020px',
+        width: isFolded.value ? '320px' : '2200px',
       }}
     >
       <div className={styles.background}>
@@ -191,6 +193,16 @@ export function BangBottomControlPanel() {
               setComponentVisibility('showTextBox', false);
             }}
           />
+          {enableFlowchart && (
+            <PanelButton
+              icon={<TreeDiagram />}
+              text={t('buttons.flowchart')}
+              onClick={() => {
+                setMenuPanel(MenuPanelTag.Flowchart);
+                setComponentVisibility('showMenuPanel', true);
+              }}
+            />
+          )}
           <PanelButton
             icon={<DoubleDown />}
             text={t('buttons.quicklySave')}
