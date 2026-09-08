@@ -5,7 +5,7 @@ import {
   IFigurePosition,
   ITransform,
 } from '@/Core/Modules/stage/stageInterface';
-import { Live2D } from '@/Core/WebGAL';
+import { Live2D, WebGAL } from '@/Core/WebGAL';
 import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/live2DCore';
 import { isIOS } from '@/Core/initializeScript';
 import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiContainer';
@@ -14,8 +14,6 @@ import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi
 import { logger } from '@/Core/util/logger';
 import { v4 as uuid } from 'uuid';
 import { cloneDeep, isEqual } from 'lodash';
-import omitBy from 'lodash/omitBy';
-import isUndefined from 'lodash/isUndefined';
 import * as PIXI from 'pixi.js';
 import { INSTALLED } from 'pixi.js';
 import { GifResource } from './GifResource';
@@ -74,7 +72,7 @@ interface SetContainerInitialPositionOptions {
   childContainer: any;
   originalWidth: number;
   originalHeight: number;
-  position: 'center' | 'left' | 'right' | 'bg';
+  position: IFigurePosition | 'bg';
   isLive2DFigure: boolean;
   overrideBounds?: [number, number, number, number];
   transform?: {
@@ -575,7 +573,7 @@ export default class PixiStage {
 
   // 聚合模型
   /* eslint-disable complexity */
-  public async addJsonlFigure(key: string, jsonlPath: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
+  public async addJsonlFigure(key: string, jsonlPath: string, presetPosition: IFigurePosition = 'center') {
     console.log('正在使用聚合模型');
     if (Live2D.isAvailable !== true) return;
 
@@ -742,7 +740,7 @@ export default class PixiStage {
   }
   /* eslint-disable complexity */
   // 添加视频模型
-  public addVideoFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
+  public addVideoFigure(key: string, url: string, presetPosition: IFigurePosition = 'center') {
     const thisFigureContainer = new WebGALPixiContainer();
 
     // 移除已有相同 key 的立绘
@@ -808,7 +806,7 @@ export default class PixiStage {
    * @param presetPosition
    */
   // eslint-disable-next-line max-params
-  public addWmdlFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right') {
+  public addWmdlFigure(key: string, url: string, presetPosition: IFigurePosition) {
     if (Live2D.isAvailable !== true) return;
     try {
       this.figureCash.push(url);
