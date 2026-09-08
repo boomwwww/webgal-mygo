@@ -1,5 +1,11 @@
-import { IEffect, IFigureAssociatedAnimation, IFigureMetadata, ITransform } from '@/Core/Modules/stage/stageInterface';
-import { Live2D, WebGAL } from '@/Core/WebGAL';
+import {
+  getFigureBaseX,
+  IFigureAssociatedAnimation,
+  IFigureMetadata,
+  IFigurePosition,
+  ITransform,
+} from '@/Core/Modules/stage/stageInterface';
+import { Live2D } from '@/Core/WebGAL';
 import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/live2DCore';
 import { isIOS } from '@/Core/initializeScript';
 import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiContainer';
@@ -26,12 +32,9 @@ export interface IAnimationObject {
 }
 
 interface IStageAnimationObject {
-  // 唯一标识
-  uuid: string;
   // 一般与作用目标有关
   key: string;
   targetKey?: string;
-  type: 'common' | 'preset';
   animationObject: IAnimationObject;
 }
 
@@ -46,6 +49,8 @@ export interface IStageObject {
   sourceExt: string;
   sourceType: 'img' | 'live2d' | 'spine' | 'gif' | 'video' | 'stage';
   spineAnimation?: string;
+  /** 创建这个立绘时用的身份，见 syncPixiStageState 的 getFigureIdentity */
+  figureIdentity?: string;
   isExiting?: boolean;
 }
 
@@ -98,7 +103,6 @@ export default class PixiStage {
   public readonly mainStageContainer: WebGALPixiContainer;
   public readonly foregroundEffectsContainer: PIXI.Container;
   public readonly backgroundEffectsContainer: PIXI.Container;
-  public notUpdateBacklogEffects = false;
   public readonly figureContainer: PIXI.Container;
   public figureObjects = this.createReactiveList<IStageObject>([]);
   public stageWidth = WebGAL.stageWidth;
@@ -237,50 +241,11 @@ export default class PixiStage {
    */
   public registerAnimation(animationObject: IAnimationObject | null, key: string, target = 'default') {
     if (!animationObject) return;
-    this.stageAnimations.push({ uuid: uuid(), animationObject, key: key, targetKey: target, type: 'common' });
+    this.stageAnimations.push({ animationObject, key: key, targetKey: target });
     // 上锁
     this.lockStageObject(target);
     animationObject.setStartState();
     this.currentApp?.ticker.add(animationObject.tickerFunc);
-  }
-
-  /**
-   * 注册预设动画
-   * @param animationObject
-   * @param key
-   * @param target
-   * @param currentEffects
-   */
-  // eslint-disable-next-line max-params
-  public registerPresetAnimation(
-    animationObject: IAnimationObject | null,
-    key: string,
-    target = 'default',
-    currentEffects: IEffect[],
-  ) {
-    if (!animationObject) return;
-    const effect = currentEffects.find((effect) => effect.target === target);
-    if (effect) {
-      const targetPixiContainer = this.getStageObjByKey(target);
-      if (targetPixiContainer) {
-        const container = targetPixiContainer.pixiContainer;
-        if (container) PixiStage.assignTransform(container, effect.transform);
-      }
-      this.requestRender();
-      return;
-    }
-    this.stageAnimations.push({ uuid: uuid(), animationObject, key: key, targetKey: target, type: 'preset' });
-    // 上锁
-    this.lockStageObject(target);
-    animationObject.setStartState();
-    this.currentApp?.ticker.add(animationObject.tickerFunc);
-  }
-
-  public stopPresetAnimationOnTarget(target: string) {
-    const targetPresetAnimations = this.stageAnimations.find((e) => e.targetKey === target && e.type === 'preset');
-    if (targetPresetAnimations) {
-      this.removeAnimation(targetPresetAnimations.key);
-    }
   }
 
   /**
@@ -326,29 +291,6 @@ export default class PixiStage {
     while (index !== -1) {
       this.removeAnimationByIndex(index);
       index = this.stageAnimations.findIndex((e) => e.targetKey === targetKey);
-    }
-  }
-
-  public removeAnimationWithSetEffects(key: string) {
-    const index = this.stageAnimations.findIndex((e) => e.key === key);
-    if (index >= 0) {
-      const thisTickerFunc = this.stageAnimations[index];
-      this.currentApp?.ticker.remove(thisTickerFunc.animationObject.tickerFunc);
-      thisTickerFunc.animationObject.setEndState();
-      const endStateEffect = thisTickerFunc.animationObject.getEndStateEffect?.() ?? {};
-      this.unlockStageObject(thisTickerFunc.targetKey ?? 'default');
-      if (thisTickerFunc.targetKey) {
-        const target = this.getStageObjByKey(thisTickerFunc.targetKey);
-        if (target) {
-          let effect: IEffect = {
-            target: thisTickerFunc.targetKey,
-            transform: endStateEffect,
-          };
-          stageStateManager.updateEffect(effect);
-          // if (!this.notUpdateBacklogEffects) updateCurrentBacklogEffects(stageStateManager.getViewStageState().effects);
-        }
-      }
-      this.stageAnimations.splice(index, 1);
     }
   }
 
@@ -567,7 +509,7 @@ export default class PixiStage {
    * @param url 立绘图片url
    * @param presetPosition
    */
-  public addFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
+  public addFigure(key: string, url: string, presetPosition: IFigurePosition = 'center') {
     const loader = this.assetLoader;
     // 准备用于存放这个立绘的 Container
     const thisFigureContainer = new WebGALPixiContainer();
@@ -613,6 +555,8 @@ export default class PixiStage {
             position: presetPosition,
             isLive2DFigure: false,
           });
+          this.notifyTargetReferenceBoxChanged(key);
+          this.requestRender();
         }
       }, 0);
     };
@@ -1076,7 +1020,7 @@ export default class PixiStage {
    * @param jsonPath
    */
   // eslint-disable-next-line max-params
-  public addLive2dFigure(key: string, jsonPath: string, pos: 'left' | 'center' | 'right') {
+  public addLive2dFigure(key: string, jsonPath: string, pos: IFigurePosition) {
     if (Live2D.isAvailable !== true) return;
     try {
       let stageWidth = this.stageWidth;
@@ -1867,15 +1811,4 @@ export default class PixiStage {
       }
     });
   }
-}
-
-function updateCurrentBacklogEffects(newEffects: IEffect[]) {
-  /**
-   * 更新当前 backlog 条目的 effects 记录
-   */
-  setTimeout(() => {
-    WebGAL.backlogManager.editLastBacklogItemEffect(cloneDeep(newEffects));
-  }, 50);
-
-  stageStateManager.setStageAndCommit('effects', newEffects);
 }
