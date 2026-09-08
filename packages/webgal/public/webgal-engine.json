@@ -4,7 +4,7 @@
   "name": "WebGAL MyGO",
   "version": "3.2.0",
   "type": "custom",
-  "webgalVersion": "4.6.2",
+  "webgalVersion": "4.6.4",
   "description": "MyGO专版引擎",
   "descriptions": {
     "en": "A web Visual Novel engine made exclusively for MyGO",

@@ -26,8 +26,7 @@ export const audioContextWrapper: IAudioContextWrapper = {
 export const ensureAudioContextReady = async (): Promise<boolean> => {
   if (!audioContextWrapper.audioContext) {
     const AudioContextCtor =
-      window.AudioContext ??
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
 
     if (!AudioContextCtor) {
       return false;
