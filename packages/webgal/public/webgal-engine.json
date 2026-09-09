@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "id": "webgal-mygo.mygo",
   "name": "WebGAL MyGO",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "type": "custom",
   "webgalVersion": "4.6.4",
   "description": "MyGO专版引擎",
