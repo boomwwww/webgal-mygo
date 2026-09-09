@@ -413,25 +413,6 @@ test("inline comment preserves following semicolons", async () => {
   expectSentenceIn(result.sentenceList, expectSentenceItem);
 });
 
-test("inline comment preserves following semicolons", async () => {
-  const parser = new SceneParser((assetList) => {
-  }, (fileName, assetType) => {
-    return fileName;
-  }, ADD_NEXT_ARG_LIST, SCRIPT_CONFIG);
-
-  const result = parser.parse(`say:123; first; second; third`, 'test', 'test');
-  const expectSentenceItem: ISentence = {
-    command: commandType.say,
-    commandRaw: "say",
-    content: "123",
-    args: [],
-    sentenceAssets: [],
-    subScene: [],
-    inlineComment: "first; second; third"
-  };
-  expect(result.sentenceList).toContainEqual(expectSentenceItem);
-});
-
 test("comment-only line keeps comment in content", async () => {
   const parser = new SceneParser((assetList) => {
   }, (fileName, assetType) => {
@@ -468,23 +449,4 @@ test("comment-only line preserves following semicolons", async () => {
     inlineComment: ""
   };
   expectSentenceIn(result.sentenceList, expectSentenceItem);
-});
-
-test("comment-only line preserves following semicolons", async () => {
-  const parser = new SceneParser((assetList) => {
-  }, (fileName, assetType) => {
-    return fileName;
-  }, ADD_NEXT_ARG_LIST, SCRIPT_CONFIG);
-
-  const result = parser.parse(`; first; second; third`, 'test', 'test');
-  const expectSentenceItem: ISentence = {
-    command: commandType.comment,
-    commandRaw: "comment",
-    content: "first; second; third",
-    args: [{ key: 'next', value: true }],
-    sentenceAssets: [],
-    subScene: [],
-    inlineComment: ""
-  };
-  expect(result.sentenceList).toContainEqual(expectSentenceItem);
 });
